@@ -21,6 +21,6 @@ function [radCorrectionX, radCorrectionY] = findRadialLensCorrection(xBar,yBar)
 
     % Computing the corrections to the radial distortion in the x and y 
     % coordinates 
-    radCorrectionX = -xBar .* ((k1 .* r^2) + (k2 .* r^4) + (k3 .* r^6));
-    radCorrectionY = -yBar .* ((k1 .* r^2) + (k2 .* r^4) + (k3 .* r^6));
+    radCorrectionX = -xBar .* ((k1 .* r.^2) + (k2 .* r.^4) + (k3 .* r.^6));
+    radCorrectionY = -yBar .* ((k1 .* r.^2) + (k2 .* r.^4) + (k3 .* r.^6));
 end

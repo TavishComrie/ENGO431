@@ -12,6 +12,6 @@ function [xCorr,yCorr] = DecentringLensDistortion(xBar,yBar)
     r = sqrt(xBar.^2+yBar.^2);
 
     %The correction
-    xCorr = -1.*(p1(r.*r+2.*xBar.*xBar)+2.*p2.*xBar.*yBar);
-    yCorr = -1.*(p1(r.*r+2.*yBar.*yBar)+2.*p2.*xBar.*yBar);
+    xCorr = -1.*(p1*(r.*r+2.*xBar.*xBar)+2.*p2.*xBar.*yBar);
+    yCorr = -1.*(p1*(r.*r+2.*yBar.*yBar)+2.*p2.*xBar.*yBar);
 end

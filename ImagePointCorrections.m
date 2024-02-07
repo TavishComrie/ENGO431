@@ -7,10 +7,11 @@ function [xPrime,yPrime] = ImagePointCorrections(x,y)
     %From calibration sheet
     xp=-0.006;
     yp=0.006;
-
+    
     %Principal point offset correction
-    xBar = x - xp;
-    yBar = y - yp;
+    xBar = x - xp
+    yBar = y - yp
+    
 
     %Find other corrections
     [xrad,yrad] = findRadialLensCorrection(xBar,yBar); 
