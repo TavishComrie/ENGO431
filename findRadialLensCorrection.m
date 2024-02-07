@@ -13,14 +13,14 @@ function [radCorrectionX, radCorrectionY] = findRadialLensCorrection(xBar,yBar)
     %                       in the y-coordinate
 
     % Systematic Radial Distortions
-    k1 = 0.8878E-4;
-    k2 = -0.1528E-7;
-    k3 = 0.5256E-12;
+    k0 = 0.8878E-4;
+    k1 = -0.1528E-7;
+    k2 = 0.5256E-12;
 
     r = sqrt(xBar.^2 + yBar.^2);    % Computing the radial distance
 
     % Computing the corrections to the radial distortion in the x and y 
     % coordinates 
-    radCorrectionX = -xBar .* ((k1 .* r.^2) + (k2 .* r.^4) + (k3 .* r.^6));
-    radCorrectionY = -yBar .* ((k1 .* r.^2) + (k2 .* r.^4) + (k3 .* r.^6));
+    radCorrectionX = -xBar .* ((k0 .* 1) + (k1 .* r.^2) + (k2 .* r.^4));
+    radCorrectionY = -yBar .* ((k0 .* 1) + (k2 .* r.^2) + (k2 .* r.^4));
 end
