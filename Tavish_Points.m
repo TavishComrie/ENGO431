@@ -1,5 +1,7 @@
+clc
 close all
-clear all
+clear 
+
 % %%Lab 2 Affine Transformation
 fids = [1346.25	-19284.75	1345.75	-19286
 19161	-1470.25	19174.75	-1483.25
@@ -114,19 +116,19 @@ normPoints28 = normalize(points28(:,1),points28(:,2));
 adjPoints28 = adjust(xhat28,normPoints28);
 Fpoints28 = unnorm(adjPoints28);
 
-[Xprime27,Yprime27] = ImagePointCorrections(Fpoints27(:,1),Fpoints27(:,2));
-[Xprime28,Yprime28] = ImagePointCorrections(Fpoints28(:,1),Fpoints28(:,2));
+[Xprime27,Yprime27, correctionsMatrix27] = ImagePointCorrections(Fpoints27(:,1),Fpoints27(:,2));
+[Xprime28,Yprime28, correctionsMatrix28] = ImagePointCorrections(Fpoints28(:,1),Fpoints28(:,2));
 
 normTPoints27 = normalize(tPoints27(:,1),tPoints27(:,2));
 adjTPoints27 = adjust(xhat27,normTPoints27);
 FTpoints27 = unnorm(adjTPoints27);
-[XprimeT27,YprimeT27] = ImagePointCorrections(FTpoints27(:,1),FTpoints27(:,2));
+[XprimeT27,YprimeT27, correctionsMatrixT27] = ImagePointCorrections(FTpoints27(:,1),FTpoints27(:,2));
 
 
 normTPoints28 = normalize(tPoints28(:,1),tPoints28(:,2));
 adjTPoints28 = adjust(xhat28,normTPoints28);
 FTpoints28 = unnorm(adjTPoints28);
-[XprimeT28,YprimeT28] = ImagePointCorrections(FTpoints28(:,1),FTpoints28(:,2));
+[XprimeT28,YprimeT28, correctionsMatrixT28] = ImagePointCorrections(FTpoints28(:,1),FTpoints28(:,2));
 
 %Transformation check with Example from lecture notes
 
