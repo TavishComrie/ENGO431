@@ -18,9 +18,9 @@ function [atmoRefrCorrectionX, atmoRefrCorrectionY] = findAtmosphericRefractionC
     h = mean([1090.96, 1086.43, ...
               1090.50, 1090.65, ...
               1091.55, 1090.82, ...
-              1083.49, 1092.00]) / 1000;
-    Hh = 751.5 / 1000;  % The flying height of the plane (from Lab 1)
-    H = Hh + h;         % The flying height of the plane from the elevation
+              1083.49, 1092.00]) * 1000
+    Hh = 751.5 * 1000;  % The flying height of the plane (from Lab 1)
+    H = Hh + h         % The flying height of the plane from the elevation
 
     r = sqrt(xBar.^2 + yBar.^2);    % Computing the radial distance
 
@@ -29,6 +29,6 @@ function [atmoRefrCorrectionX, atmoRefrCorrectionY] = findAtmosphericRefractionC
 
     % Computing the corrections to the atmospheric refraction in the x and
     % y coordinates
-    atmoRefrCorrectionX = -xBar .* (1 + (r.^2 ./ c^2)) .* K;
-    atmoRefrCorrectionY = -yBar .* (1 + (r.^2 ./ c^2)) .* K;
+    atmoRefrCorrectionX = -xBar .* K .* (1 + (r.^2 ./ c^2));
+    atmoRefrCorrectionY = -yBar .* K .* (1 + (r.^2 ./ c^2));
 end
