@@ -38,7 +38,6 @@ v28 = residuals(A28,xhat28,obs);
 
 
 [theta,Sx,Sy,skew] = calcParams(xhat27(1),xhat27(2),xhat27(4),xhat27(5))
-[theta28,Sx28,Sy28,skew28] = calcParams(xhat28(1),xhat28(2),xhat28(4),xhat28(5))
 
 finalcoords1 = adjust(xhat27,fids27);
 pCoords27 = unnorm(finalcoords1);
@@ -50,17 +49,9 @@ res28 = unnorm(v28);
 
 figure;
 quiver(pCoords27(:,1),pCoords27(:,2),res27(:,1),res27(:,2),0.1);
-xlabel('x (mm)')
-ylabel('y (mm)')
-title('Image Point Residuals from Image 27')
-print(gcf, '5', '-dpng', '-r300');
 
 figure;
 quiver(pCoords28(:,1),pCoords28(:,2),res28(:,1),res28(:,2),0.1);
-xlabel('x (mm)')
-ylabel('y (mm)')
-title('Image Point Residuals from Image 28')
-print(gcf, '6', '-dpng', '-r300');
 
 points27 = [11781	-1174
 9616.5	-14501.25
@@ -146,7 +137,7 @@ xhat = makeXhat(A,res);
 v = residuals(A,xhat,res);
 
 
-%[theta,Sx,Sy,skew] = calcParams(xhat(1),xhat(2),xhat(4),xhat(5))
+[theta,Sx,Sy,skew] = calcParams(xhat(1),xhat(2),xhat(4),xhat(5))
 finalcoords = adjust(xhat,obs2);
 pCoords = unnorm(finalcoords);
 
@@ -155,8 +146,7 @@ resids = unnorm(v);
 figure;
 quiver(pCoords(:,1),pCoords(:,2),resids(:,1),resids(:,2),0.1)
 xlabel('x (mm)')
-ylabel('y (mm)')
-title('Validation Image Point Residual Quiver Plot')
+ylabel('y (mm')
 print(gcf, '7', '-dpng', '-r300');
 function A = makeA(fids)
     A = zeros(size(fids,1),6);
