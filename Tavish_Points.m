@@ -37,8 +37,8 @@ v28 = residuals(A28,xhat28,obs);
 
 
 
-[theta,Sx,Sy,skew] = calcParams(xhat27(1),xhat27(2),xhat27(4),xhat27(5))
-[theta28,Sx28,Sy28,skew28] = calcParams(xhat28(1),xhat28(2),xhat28(4),xhat28(5))
+[theta,Sx,Sy,skew] = calcParams(xhat27(1),xhat27(2),xhat27(4),xhat27(5));
+[theta28,Sx28,Sy28,skew28] = calcParams(xhat28(1),xhat28(2),xhat28(4),xhat28(5));
 
 finalcoords1 = adjust(xhat27,fids27);
 pCoords27 = unnorm(finalcoords1);
@@ -47,6 +47,11 @@ pCoords28 = unnorm(finalcoords2);
 
 res27 = unnorm(v27);
 res28 = unnorm(v28);
+rmsX27 = rms(res27(:,1))
+rmsY27 = rms(res27(:,2))
+rmsX28 = rms(res28(:,1))
+rmsY28 = rms(res28(:,2))
+
 
 figure;
 quiver(pCoords27(:,1),pCoords27(:,2),res27(:,1),res27(:,2),0.1);
@@ -84,6 +89,22 @@ points28 = [3726	-851
 6984	-17948.5
 ];
 
+tPoints27 = [14358.25	-4412.00
+19026.75	-4494.75
+9293.00	-9500.50
+17891.25	-10881.00
+11327.00	-14557.75
+19133.25	-16965.00
+];
+
+tPoints28 = [6404.25	-4093.75
+11113.00	-4029.25
+1434.75	-9419.50
+10047.50	-10555.75
+3633.75	-14424.75
+11400.00	-16602.75
+];
+
 normPoints27 = normalize(points27(:,1),points27(:,2));
 adjPoints27 = adjust(xhat27,normPoints27);
 Fpoints27 = unnorm(adjPoints27);
@@ -93,7 +114,19 @@ normPoints28 = normalize(points28(:,1),points28(:,2));
 adjPoints28 = adjust(xhat28,normPoints28);
 Fpoints28 = unnorm(adjPoints28);
 
-[Xprime,Yprime] = ImagePointCorrections(Fpoints27(:,1),Fpoints27(:,2))
+[Xprime27,Yprime27] = ImagePointCorrections(Fpoints27(:,1),Fpoints27(:,2));
+[Xprime28,Yprime28] = ImagePointCorrections(Fpoints28(:,1),Fpoints28(:,2));
+
+normTPoints27 = normalize(tPoints27(:,1),tPoints27(:,2));
+adjTPoints27 = adjust(xhat27,normTPoints27);
+FTpoints27 = unnorm(adjTPoints27);
+[XprimeT27,YprimeT27] = ImagePointCorrections(FTpoints27(:,1),FTpoints27(:,2));
+
+
+normTPoints28 = normalize(tPoints28(:,1),tPoints28(:,2));
+adjTPoints28 = adjust(xhat28,normTPoints28);
+FTpoints28 = unnorm(adjTPoints28);
+[XprimeT28,YprimeT28] = ImagePointCorrections(FTpoints28(:,1),FTpoints28(:,2));
 
 %Transformation check with Example from lecture notes
 
