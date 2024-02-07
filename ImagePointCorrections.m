@@ -1,4 +1,4 @@
-function [xPrime,yPrime] = ImagePointCorrections(x,y)
+function [xPrime,yPrime,correctionsMatrix] = ImagePointCorrections(x,y)
 %ImagePointCorrections
 % x and y are provided in fiducial system. Units of mm. May be a vector
 % xPrime and yPrime return corrected coordinates for principal point,
@@ -9,16 +9,18 @@ function [xPrime,yPrime] = ImagePointCorrections(x,y)
     yp=0.006;
     
     %Principal point offset correction
-    xBar = x - xp
-    yBar = y - yp
+    xBar = x - xp; 
+    yBar = y - yp;
     
 
     %Find other corrections
-    [xrad,yrad] = findRadialLensCorrection(xBar,yBar); 
-    [xdec,ydec] = DecentringLensDistortion(xBar,yBar); 
-    [xatm,yatm] = findAtmosphericRefractionCorrection(xBar,yBar);
+    [xrad,yrad] = findRadialLensCorrection(xBar,yBar)
+    [xdec,ydec] = DecentringLensDistortion(xBar,yBar)
+    [xatm,yatm] = findAtmosphericRefractionCorrection(xBar,yBar)
 
     %Apply corrections
     xPrime = xBar + xrad + xdec + xatm;
     yPrime = yBar + yrad + ydec + yatm;
+
+    correctionsMatrix = [xrad,yrad,xdec,ydec,xatm,yatm]
 end

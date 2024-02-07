@@ -9,7 +9,7 @@ function [xCorr,yCorr] = DecentringLensDistortion(xBar,yBar)
     p2 = 0.1224e-7;
 
     %Radial distance
-    r = sqrt(xBar.^2+yBar.^2);
+    r = sqrt(xBar.^2+yBar.^2)
 
     %The correction
     xCorr = -1.*(p1*(r.*r+2.*xBar.*xBar)+2.*p2.*xBar.*yBar);
