@@ -22,26 +22,30 @@ obsin = [-105.997	-105.995
 0.002	-111.998
 ];
 
+%Normalizes the input data
 obs = normalize(obsin(:,1),obsin(:,2));
 
 fids27 = normalize(fids(:,1),fids(:,2));
 fids28 = normalize(fids(:,3),fids(:,4));
 
-
+%Creates A matrices
 A27 = makeA(fids27);
 A28 = makeA(fids28);
 
+%Solves for unknowns
 xhat27 = makeXhat(A27,obs);
 xhat28 = makeXhat(A28,obs);
 
+%Solves for residuals
 v27 = residuals(A27,xhat27,obs);
 v28 = residuals(A28,xhat28,obs);
 
 
-
+%Determines object parameters from a,b,c,d
 [theta,Sx,Sy,skew] = calcParams(xhat27(1),xhat27(2),xhat27(4),xhat27(5));
 [theta28,Sx28,Sy28,skew28] = calcParams(xhat28(1),xhat28(2),xhat28(4),xhat28(5));
 
+%Adjusts and unnormalizes
 finalcoords1 = adjust(xhat27,fids27);
 pCoords27 = unnorm(finalcoords1);
 finalcoords2 = adjust(xhat28,fids28);
@@ -49,12 +53,14 @@ pCoords28 = unnorm(finalcoords2);
 
 res27 = unnorm(v27);
 res28 = unnorm(v28);
+
+%Finds rms error 
 rmsX27 = rms(res27(:,1))
 rmsY27 = rms(res27(:,2))
 rmsX28 = rms(res28(:,1))
 rmsY28 = rms(res28(:,2))
 
-
+%Plots all of the results
 figure;
 quiver(pCoords27(:,1),pCoords27(:,2),res27(:,1),res27(:,2),0.1);
 xlabel('x (mm)')
