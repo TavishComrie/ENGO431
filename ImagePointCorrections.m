@@ -14,13 +14,13 @@ function [xPrime,yPrime,correctionsMatrix] = ImagePointCorrections(x,y)
     
 
     %Find other corrections
-    [xrad,yrad] = findRadialLensCorrection(xBar,yBar)
-    [xdec,ydec] = DecentringLensDistortion(xBar,yBar)
-    [xatm,yatm] = findAtmosphericRefractionCorrection(xBar,yBar)
+    [xrad,yrad] = findRadialLensCorrection(xBar,yBar);
+    [xdec,ydec] = DecentringLensDistortion(xBar,yBar);
+    [xatm,yatm] = findAtmosphericRefractionCorrection(xBar,yBar);
 
     %Apply corrections
     xPrime = xBar + xrad + xdec + xatm;
     yPrime = yBar + yrad + ydec + yatm;
 
-    correctionsMatrix = [xrad,yrad,xdec,ydec,xatm,yatm]
+    correctionsMatrix = [xrad,yrad,xdec,ydec,xatm,yatm];
 end
