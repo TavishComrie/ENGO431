@@ -38,6 +38,7 @@ fids28 = normalize(fids(:,3),fids(:,4));
 A27 = makeA(fids27);
 A28 = makeA(fids28);
 
+
 %Solves for unknowns
 xhat27 = makeXhat(A27,obs);
 xhat28 = makeXhat(A28,obs);
@@ -285,7 +286,9 @@ function reverse = unnorm(res)
 end
 
 %Function to adjust pixel coordinates into mm using the affine
-%transformation parameters solved for previously in this lab. Ta
+%transformation parameters solved for previously in this lab. Takes the
+%affine parameters and a vector of coordinates as input and returns a
+%vector of adjusted coordinates.
 function finalcoords = adjust(xhat,cCoords)
     finalcoords = zeros(size(cCoords,1),1);
     
