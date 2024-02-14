@@ -17,12 +17,12 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
     zprime = zeros(6,1);
 
 
-    notConverged = false;
+    notConverged = true;
     while notConverged
 
         %KRISH TODO (set the input vars)   
         for i = 1:size(data,1)
-            mvectorXYZ = [data(i,4), data(i,5), c];
+            mvectorXYZ = [data(i,3), data(i,4), c];
             M = M_transformation_Matrix(xhat);
             [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
         end
@@ -30,15 +30,15 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
         dataprime = [xprime, yprime, zprime]
 
         %RAYMOND TODO (set the input vars)
-        A = findDesignMatrix(data, dataprime, x0, c, bx);
+        A = findDesignMatrixA(data, dataprime, xhat, c, bx);
 
         
-        w = createMisclosure(x0,data,dataprime,c,bx);
+        w = createMisclosure(xhat,data,dataprime,c,bx);
 
         N = transpose(A) * A;
         u = transpose(A) * w;
 
-        delta = inv(N) * u;
+        delta = -1 * inv(N) * u;
 
         xhat = xhat + delta;
 
@@ -55,7 +55,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 end
 
 function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-    for i = 1:size(A, 1)
+    for i = 1:6
         xL = data(i, 1);
         yL = data(i, 2);
 
@@ -63,10 +63,10 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
         yR = dataPrime(i, 2);
         zR = dataPrime(i, 3);
 
-        by = xo(i, 1);
-        bz = xo(i, 2);
-        omega = xo(i, 3);
-        phi = xo(i, 4);
+        by = xo(1, 1);
+        bz = xo(2, 1);
+        omega = xo(3, 1);
+        phi = xo(4, 1);
 
         a = -yR * sin(omega) + zR * cos(omega);
         b = xR * sin(omega);
@@ -80,7 +80,7 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
                        xR, yR, zR]);
 
         deltaBz = det([0, 0, 1; ...
-                       xl, yL, -C; ...
+                       xL, yL, -C; ...
                        xR, yR, zR]);
 
         deltaW = det([bx, by, bz; ...
