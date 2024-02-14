@@ -10,12 +10,21 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
     threshold = [0.001;0.001;0.001;0.001;0.001;];
 
+
+    xprime = zeros(6,1);
+    yprime = zeros(6,1);
+    zprime = zeros(6,1);
+
+
     notConverged = false;
     while notConverged
 
-        %KRISH TODO (set the input vars)
-        M = M_transformation_matrix();
-        dataprime = transformation();
+        %KRISH TODO (set the input vars)   
+        for i = 1:size(data,1)
+            mvectorXYZ = [data(i,4), data(i,5), c];
+            M = M_transformation_Matrix(xhat);
+            [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
+        end
 
         %RAYMOND TODO (set the input vars)
         A = findDesignMatrix();
@@ -63,4 +72,22 @@ function A = findDesignMatrixA(data, dataPrime, xo)
 xL = data()
 deltaBy = [0, 1, 0;
            ]
+end
+
+
+function M = M_transformation_Matrix(Xnot)
+    w = Xnot(1,1);
+    phi = Xnot(2,1);
+    kappa = Xnot(3,1);
+    M = [cosd(phi)*cosd(kappa), cosd(w)*sind(kappa)+sind(w)*sind(phi)*cosd(kappa), sind(w)*sind(kappa)-cosd(w)*sind(phi)*cosd(kappa);
+        -cosd(phi)*sind(kappa), cosd(w)*cosd(kappa)-sind(w)*sind(phi)*sind(kappa), sind(w)*cosd(kappa)+cosd(w)*sind(phi)*sind(kappa);
+        sind(phi), -sind(w)*cosd(phi), cosd(w)*cosd(phi)];
+end
+
+
+function [xprime,yprime,zprime] = transformation(M, vector_x_y_z)
+    vector_intermediate = transpose(M)* transpose(vector_x_y_z);
+    xprime = vector_intermediate(1,1);
+    yprime = vector_intermediate(2,1);
+    zprime = vector_intermediate(3,1);
 end
