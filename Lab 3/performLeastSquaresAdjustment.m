@@ -5,6 +5,8 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
     %In order 5x1: by,bz,w,theta,kappa
     xhat(5,1) = zeros;
     c = 153.358; %mm
+    bx = 92.000; 
+
 
     threshold = [0.001;0.001;0.001;0.001;0.001;];
 
@@ -52,5 +54,13 @@ function w = createMisclosure(x0,data,dataprime,c,bx)
         misclosure(3,:) = dataprime(i,:);
         
         w(i,1) = det(misclosure);
+
     end
+end
+
+function A = findDesignMatrixA(data, dataPrime, xo)
+
+xL = data()
+deltaBy = [0, 1, 0;
+           ]
 end
