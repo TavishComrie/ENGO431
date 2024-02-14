@@ -8,51 +8,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
     bx = 92.000; 
 
 
-<<<<<<< HEAD
-    function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-        for i = 1:size(A, 1)
-            xL = data(i, 1);
-            yL = data(i, 2);
-
-            xR = dataPrime(i, 1);
-            yR = dataPrime(i, 2);
-            zR = dataPrime(i, 3);
-
-            by = xo(i, 1);
-            bz = xo(i, 2);
-            omega = xo(i, 3);
-            phi = xo(i, 4);
-
-            a = -yR * sin(omega) + zR * cos(omega);
-            b = xR * sin(omega);
-            c = -xR * cos(omega);
-            d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
-            e = xR * cos(omega) * cos(phi) - zR * sin(phi);
-            f = xR * sin(omega) * cos(phi) + yR * sin(phi);
-
-            deltaBy = det([0, 1, 0; ...
-                           xL, yL, -C; ...
-                           xR, yR, zR]);
-
-            deltaBz = det([0, 0, 1; ...
-                           xl, yL, -C; ...
-                           xR, yR, zR]);
-
-            deltaW = det([bx, by, bz; ...
-                          xL, yL, -C; ...
-                          0, -zR, yR]);
-
-            deltaPhi = det([bx, by, bz; ...
-                             xL, yL, -C; ...
-                             a, b, c]);
-
-            deltaKappa = det([bx, by, bz; ...
-                              xL, yL, -C; ...
-                              d, e, f]);
-
-            A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
-        end         
-=======
+       
     threshold = [0.001;0.001;0.001;0.001;0.001;];
 
 
@@ -71,8 +27,10 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
             [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
         end
 
+        dataprime = [xprime, yprime, zprime]
+
         %RAYMOND TODO (set the input vars)
-        A = findDesignMatrix();
+        A = findDesignMatrix(data, dataprime, x0, c, bx);
 
         
         w = createMisclosure(x0,data,dataprime,c,bx);
@@ -86,7 +44,6 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
         check = delta > threshold;
         notConverged = ismember(1,check);
->>>>>>> 6a26301c6280c7b5fcd8ecb5248d206da1b2c184
     end
 
     residuals = A * delta + w;
@@ -96,6 +53,52 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
     Rx = corrcov(Cx);
 end
+
+function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
+    for i = 1:size(A, 1)
+        xL = data(i, 1);
+        yL = data(i, 2);
+
+        xR = dataPrime(i, 1);
+        yR = dataPrime(i, 2);
+        zR = dataPrime(i, 3);
+
+        by = xo(i, 1);
+        bz = xo(i, 2);
+        omega = xo(i, 3);
+        phi = xo(i, 4);
+
+        a = -yR * sin(omega) + zR * cos(omega);
+        b = xR * sin(omega);
+        c = -xR * cos(omega);
+        d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
+        e = xR * cos(omega) * cos(phi) - zR * sin(phi);
+        f = xR * sin(omega) * cos(phi) + yR * sin(phi);
+
+        deltaBy = det([0, 1, 0; ...
+                       xL, yL, -C; ...
+                       xR, yR, zR]);
+
+        deltaBz = det([0, 0, 1; ...
+                       xl, yL, -C; ...
+                       xR, yR, zR]);
+
+        deltaW = det([bx, by, bz; ...
+                      xL, yL, -C; ...
+                      0, -zR, yR]);
+
+        deltaPhi = det([bx, by, bz; ...
+                         xL, yL, -C; ...
+                         a, b, c]);
+
+        deltaKappa = det([bx, by, bz; ...
+                          xL, yL, -C; ...
+                          d, e, f]);
+
+        A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
+    end      
+end
+
 
 function w = createMisclosure(x0,data,dataprime,c,bx)
     w(6,1)=zeros;
@@ -111,13 +114,6 @@ function w = createMisclosure(x0,data,dataprime,c,bx)
         w(i,1) = det(misclosure);
 
     end
-end
-
-function A = findDesignMatrixA(data, dataPrime, xo)
-
-xL = data()
-deltaBy = [0, 1, 0;
-           ]
 end
 
 
