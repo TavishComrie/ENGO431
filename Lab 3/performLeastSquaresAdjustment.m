@@ -15,19 +15,24 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
     xprime = zeros(6,1);
     yprime = zeros(6,1);
     zprime = zeros(6,1);
-
+    
+    counter = 0;
 
     notConverged = true;
-    while notConverged
+    while notConverged && counter < 3
+        M = M_transformation_Matrix(xhat);
 
         %KRISH TODO (set the input vars)   
-        for i = 1:size(data,1)
+        for i = 1:6
             mvectorXYZ = [data(i,3), data(i,4), c];
-            M = M_transformation_Matrix(xhat);
             [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
         end
 
-        dataprime = [xprime, yprime, zprime]
+        dataprime = [xprime, yprime, zprime];
+        %dataprime(:,1) = dataprime(:,1) + bx;
+        %dataprime(:,2) = dataprime(:,2) + xhat(1,1);
+        %dataprime(:,3) = dataprime(:,3) + xhat(2,1);
+
 
         %RAYMOND TODO (set the input vars)
         A = findDesignMatrixA(data, dataprime, xhat, c, bx);
@@ -44,7 +49,12 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
         check = delta > threshold;
         notConverged = ismember(1,check);
+
+        counter = counter + 1;
+
     end
+
+    counter
 
     residuals = A * delta + w;
 
@@ -68,12 +78,12 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
         omega = xo(3, 1);
         phi = xo(4, 1);
 
-        a = -yR * sind(omega) + zR * cosd(omega);
-        b = xR * sind(omega);
-        c = -xR * cosd(omega);
-        d = -yR * cosd(omega) * cosd(phi) - zR * sind(omega) * cosd(phi);
-        e = xR * cosd(omega) * cosd(phi) - zR * sind(phi);
-        f = xR * sind(omega) * cosd(phi) + yR * sind(phi);
+        a = -yR * sin(omega) + zR * cos(omega);
+        b = xR * sin(omega);
+        c = -xR * cos(omega);
+        d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
+        e = xR * cos(omega) * cos(phi) - zR * sin(phi);
+        f = xR * sin(omega) * cos(phi) + yR * sin(phi);
 
         deltaBy = det([0, 1, 0; ...
                        xL, yL, -C; ...
@@ -118,17 +128,17 @@ end
 
 
 function M = M_transformation_Matrix(Xnot)
-    w = Xnot(1,1);
-    phi = Xnot(2,1);
-    kappa = Xnot(3,1);
-    M = [cosd(phi)*cosd(kappa), cosd(w)*sind(kappa)+sind(w)*sind(phi)*cosd(kappa), sind(w)*sind(kappa)-cosd(w)*sind(phi)*cosd(kappa);
-        -cosd(phi)*sind(kappa), cosd(w)*cosd(kappa)-sind(w)*sind(phi)*sind(kappa), sind(w)*cosd(kappa)+cosd(w)*sind(phi)*sind(kappa);
-        sind(phi), -sind(w)*cosd(phi), cosd(w)*cosd(phi)];
+    w = Xnot(3,1);
+    phi = Xnot(4,1);
+    kappa = Xnot(5,1);
+    M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
+        -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
+        sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
 end
 
 
 function [xprime,yprime,zprime] = transformation(M, vector_x_y_z)
-    vector_intermediate = transpose(M)* transpose(vector_x_y_z);
+    vector_intermediate = transpose(M) * transpose(vector_x_y_z);
     xprime = vector_intermediate(1,1);
     yprime = vector_intermediate(2,1);
     zprime = vector_intermediate(3,1);
