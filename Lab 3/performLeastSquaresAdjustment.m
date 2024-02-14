@@ -68,12 +68,12 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
         omega = xo(3, 1);
         phi = xo(4, 1);
 
-        a = -yR * sin(omega) + zR * cos(omega);
-        b = xR * sin(omega);
-        c = -xR * cos(omega);
-        d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
-        e = xR * cos(omega) * cos(phi) - zR * sin(phi);
-        f = xR * sin(omega) * cos(phi) + yR * sin(phi);
+        a = -yR * sind(omega) + zR * cosd(omega);
+        b = xR * sind(omega);
+        c = -xR * cosd(omega);
+        d = -yR * cosd(omega) * cosd(phi) - zR * sind(omega) * cosd(phi);
+        e = xR * cosd(omega) * cosd(phi) - zR * sind(phi);
+        f = xR * sind(omega) * cosd(phi) + yR * sind(phi);
 
         deltaBy = det([0, 1, 0; ...
                        xL, yL, -C; ...
