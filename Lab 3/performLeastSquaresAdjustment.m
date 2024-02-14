@@ -19,7 +19,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
     counter = 0;
 
     notConverged = true;
-    while notConverged && counter < 3
+    while notConverged
         M = M_transformation_Matrix(xhat);
 
         %KRISH TODO (set the input vars)   
