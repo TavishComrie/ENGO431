@@ -24,7 +24,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
         %KRISH TODO (set the input vars)   
         for i = 1:6
-            mvectorXYZ = [data(i,3), data(i,4), c];
+            mvectorXYZ = [data(i,3), data(i,4), -c];
             [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
         end
 
@@ -35,7 +35,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
 
         %RAYMOND TODO (set the input vars)
-        A = findDesignMatrixA(data, dataprime, xhat, c, bx);
+        A = findDesignMatrixA(data, dataprime, xhat, c, bx)
 
         
         w = createMisclosure(xhat,data,dataprime,c,bx);
