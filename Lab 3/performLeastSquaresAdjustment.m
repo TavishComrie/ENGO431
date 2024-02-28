@@ -35,10 +35,10 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
 
         %RAYMOND TODO (set the input vars)
-        A = findDesignMatrixA(data, dataprime, xhat, c, bx);
+        A = findDesignMatrixA(data, dataprime, xhat, c, bx)
 
         
-        w = createMisclosure(xhat,data,dataprime,c,bx);
+        w = createMisclosure(xhat,data,dataprime,c,bx)
 
         N = transpose(A) * A;
         u = transpose(A) * w;
@@ -119,7 +119,7 @@ function w = createMisclosure(x0,data,dataprime,c,bx)
         misclosure(1,2:3) = x0(1:2,1);
         misclosure(2,1:2) = data(i,1:2);
         misclosure(2,3) = -1 * c;
-        misclosure(3,:) = dataprime(i,:);
+        misclosure(3,:) = dataprime(i,:)
         
         w(i,1) = det(misclosure);
 
