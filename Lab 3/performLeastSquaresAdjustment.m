@@ -9,7 +9,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
 
        
-    threshold = [0.001;0.001;0.001;0.001;0.001;];
+    threshold = [0.001;0.001;0.0001;0.0001;0.0001;];
 
 
     xprime = zeros(6,1);
@@ -45,7 +45,7 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
         delta = -1 * inv(N) * u;
 
-        xhat = xhat + delta;
+        xhat = xhat + delta
 
         check = delta > threshold;
         notConverged = ismember(1,check);
@@ -56,6 +56,20 @@ function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
 
     counter
 
+
+    M = M_transformation_Matrix(xhat);
+
+    %KRISH TODO (set the input vars)   
+    for i = 1:6
+        mvectorXYZ = [data(i,3), data(i,4), -c];
+        [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
+    end
+
+    dataprime = [xprime, yprime, zprime];
+
+
+    w = createMisclosure(xhat,data,dataprime,c,bx)
+    A = findDesignMatrixA(data, dataprime, xhat, c, bx)
     residuals = A * delta + w;
 
     aPost = transpose(residuals) * residuals;
