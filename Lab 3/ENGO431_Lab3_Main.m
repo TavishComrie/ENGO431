@@ -8,8 +8,8 @@ datacheck(:,1)=[];
 
 datamain = load("uofc relative orientation input data.txt");
 
-[xhatCheck, residualsCheck,RxCheck] = performLeastSquaresAdjustment(datacheck)
-[xhatMain, residualsMain,RxMain] = performLeastSquaresAdjustment(datamain)
+[xhatCheck, residualsCheck, RxCheck, dataPrimeCheck] = performLeastSquaresAdjustment(datacheck)
+[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(datamain)
 
 writematrix(xhatCheck, 'ROPCheck.txt')
 writematrix(residualsCheck, 'residualsCheck.txt')
@@ -22,3 +22,4 @@ writematrix(RxMain, 'Corr.txt')
 %Puts into dd to check
 xhatCheck(3:5,1) = xhatCheck(3:5,1) * 180 / pi
 xhatMain(3:5,1) = xhatMain(3:5,1) * 180 / pi
+

@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx] = performLeastSquaresAdjustment(data)
+function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here
     
@@ -133,7 +133,7 @@ function w = createMisclosure(x0,data,dataprime,c,bx)
         misclosure(1,2:3) = x0(1:2,1);
         misclosure(2,1:2) = data(i,1:2);
         misclosure(2,3) = -1 * c;
-        misclosure(3,:) = dataprime(i,:)
+        misclosure(3,:) = dataprime(i,:);
         
         w(i,1) = det(misclosure);
 
