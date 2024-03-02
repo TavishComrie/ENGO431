@@ -34,17 +34,17 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
 
 
         %RAYMOND TODO (set the input vars)
-        A = findDesignMatrixA(data, dataprime, xhat, c, bx)
+        A = findDesignMatrixA(data, dataprime, xhat, c, bx);
 
         
-        w = createMisclosure(xhat,data,dataprime,c,bx)
+        w = createMisclosure(xhat,data,dataprime,c,bx);
 
         N = transpose(A) * A;
         u = transpose(A) * w;
 
         delta = -1 * inv(N) * u;
 
-        xhat = xhat + delta
+        xhat = xhat + delta;
 
         check = delta > threshold;
         notConverged = ismember(1,check);
@@ -52,9 +52,6 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
         counter = counter + 1;
 
     end
-
-    counter
-
 
     M = M_transformation_Matrix(xhat);
 
@@ -67,8 +64,8 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     dataprime = [xprime, yprime, zprime];
 
 
-    w = createMisclosure(xhat,data,dataprime,c,bx)
-    A = findDesignMatrixA(data, dataprime, xhat, c, bx)
+    w = createMisclosure(xhat,data,dataprime,c,bx);
+    A = findDesignMatrixA(data, dataprime, xhat, c, bx);
     residuals = A * delta + w;
 
     aPost = transpose(residuals) * residuals;
