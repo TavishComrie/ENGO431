@@ -1,10 +1,9 @@
-function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data)
+function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here
     
     %In order 5x1: by,bz,w,theta,kappa
     xhat(5,1) = zeros;
-    c = 153.358; %mm
     bx = 92.000; 
 
 
