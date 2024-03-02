@@ -23,3 +23,8 @@ writematrix(RxMain, 'Corr.txt')
 xhatCheck(3:5,1) = xhatCheck(3:5,1) * 180 / pi
 xhatMain(3:5,1) = xhatMain(3:5,1) * 180 / pi
 
+
+% Performing Space Intersection
+[xhatCheckSI, yPCheck] = performSpaceIntersection(datacheck, dataPrimeCheck, xhatCheck, 152.15)
+[xhatMainSI, yPMain] = performSpaceIntersection(datamain, dataPrimeMain, xhatMain, 153.358)
+
