@@ -156,6 +156,10 @@ adjTPoints28 = adjust(xhat28,normTPoints28);
 FTpoints28 = unnorm(adjTPoints28);
 [XprimeT28,YprimeT28, correctionsMatrixT28] = ImagePointCorrections(FTpoints28(:,1),FTpoints28(:,2));
 
+tiePoints = [XprimeT27, YprimeT27, XprimeT28, YprimeT28];
+
+writematrix(tiePoints, "tiePoints.txt")
+
 %Transformation check with Example from lecture notes
 %Following same steps as for the previous transformation of the lab data 
 Comp_cords= [-113.767	-107.400

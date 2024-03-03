@@ -7,9 +7,11 @@ datacheck = load("relative orientation input data.txt");
 datacheck(:,1)=[];
 
 datamain = load("uofc relative orientation input data.txt");
+tiePoints = load("tiePoints.txt");
 
 [xhatCheck, residualsCheck, RxCheck, dataPrimeCheck] = performLeastSquaresAdjustment(datacheck, 152.15)
-[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(datamain, 153.358)
+%[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(datamain, 153.358)
+[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(tiePoints, 153.358)
 
 writematrix(xhatCheck, 'ROPCheck.txt')
 writematrix(residualsCheck, 'residualsCheck.txt')
