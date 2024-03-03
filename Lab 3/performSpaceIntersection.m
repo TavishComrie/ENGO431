@@ -28,6 +28,6 @@ function [xhat, pY] = performSpaceIntersection(data, dataPrime, x, c)
         Z = ZL;
 
         xhat(i, :) = [X, Y, Z];
-        pY = YR - YL;
+        pY(i, :) = YR - YL;
     end
 end
