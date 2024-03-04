@@ -27,6 +27,6 @@ xhatMain(3:5,1) = xhatMain(3:5,1) * 180 / pi;
 
 
 % Performing Space Intersection
-[xhatCheckSI, imageCoordsCheck, yPCheck] = performSpaceIntersection(datacheck, dataPrimeCheck, xhatCheck, 152.15)
-[xhatMainSI, imageCoordsMain, yPMain] = performSpaceIntersection(datamain, dataPrimeMain, xhatMain, 153.358)
+[xhatCheckSI, yPCheck] = performSpaceIntersection(datacheck, dataPrimeCheck, xhatCheck, 152.15)
+[xhatMainSI, yPMain] = performSpaceIntersection(datamain, dataPrimeMain, xhatMain, 153.358)
 

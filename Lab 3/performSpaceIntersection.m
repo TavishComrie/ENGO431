@@ -1,4 +1,4 @@
-function [xhat, checkHat, pY] = performSpaceIntersection(data, dataPrime, x, c)
+function [xhat, pY] = performSpaceIntersection(data, dataPrime, x, c)
     bx = 92.000;
     by = x(1, 1);
     bz = x(2, 1);
@@ -28,7 +28,6 @@ function [xhat, checkHat, pY] = performSpaceIntersection(data, dataPrime, x, c)
         Z = ZL;
 
         xhat(i, :) = [X, Y, Z];
-        checkHat(i, :) = [XL, XR, YL, YR, ZL, ZR];
         pY(i, :) = YR - YL;
     end
 end
