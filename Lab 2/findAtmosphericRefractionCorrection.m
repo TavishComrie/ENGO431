@@ -29,6 +29,6 @@ function [atmoRefrCorrectionX, atmoRefrCorrectionY] = findAtmosphericRefractionC
 
     % Computing the corrections to the atmospheric refraction in the x and
     % y coordinates
-    atmoRefrCorrectionX = -xBar .* K .* (1 + (r.^2 ./ c^2)) .* 10E-6;
-    atmoRefrCorrectionY = -yBar .* K .* (1 + (r.^2 ./ c^2)) .* 10E-6;
+    atmoRefrCorrectionX = -xBar .* K .* (1 + (r.^2 ./ c^2)) .* 1E-6;
+    atmoRefrCorrectionY = -yBar .* K .* (1 + (r.^2 ./ c^2)) .* 1E-6;
 end
