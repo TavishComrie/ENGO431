@@ -63,45 +63,47 @@ end
 
 function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
     for i = 1:6
-        xL = data(i, 1);
-        yL = data(i, 2);
+        Xm = coords(i,1);
+        Ym = coords(i,2);
+        Zm = coords(i,3);
+ 
 
-        xR = dataPrime(i, 1);
-        yR = dataPrime(i, 2);
-        zR = dataPrime(i, 3);
+        omega = xo(1, 1);
+        phi = xo(2, 1);
+        kappa = xo(3,1);
+        tx = xo(4,1);
+        ty = xo(5,1);
+        yz = xo(6,1);
+        scale = xo(7,1);
 
-        by = xo(1, 1);
-        bz = xo(2, 1);
-        omega = xo(3, 1);
-        phi = xo(4, 1);
+        %X derivatives
+        deltaomegax = ((Ym * scale) * (-sin(omega) * sin(kappa) + cos(omega) * sin(phi) * cos(kappa))) + ((scale*Zm) * (cos(omega) * sin(kappa) + sin(omega) * sin(phi) * cos(kappa)));
+        deltaphix = -scale * Xm * sin(phi) * cos(kappa) + scale * Ym * sin(omega) * cos(phi) * cos(kappa)- scale * Zm *cos(omega) * cos(phi) * cos(kappa);
+        deltakx = (-scale * Xm * cos(phi) * sin(kappa) ) + ((scale * Ym ) * (cos(omega)*cos(kappa) - sin(omega) * sin(phi) * sin(kappa))) + ((scale * Zm) * (sin(omega)*cos(kappa) + cos(omega)*sin(phi)*sin(kappa)));
+        deltatxx = 1;
+        deltatyx = 0;
+        deltatzx = 0;
+        deltascalex = Xm * Mmatrix(1,1) + Ym * Mmatrix(1,2) * Zm * Mmatrix(1,3);
 
-        a = -yR * sin(omega) + zR * cos(omega);
-        b = xR * sin(omega);
-        c = -xR * cos(omega);
-        d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
-        e = xR * cos(omega) * cos(phi) - zR * sin(phi);
-        f = xR * sin(omega) * cos(phi) + yR * sin(phi);
+        %derivates Y
+        deltaomegay = ((Ym * scale) * (-sin(omega) * cos(kappa) - cos(omega) * sin(phi) * sin(kappa))) + ((scale*Zm) * (cos(omega) * cos(kappa) - sin(omega) * sin(phi) * sin(kappa)));
+        deltaphiy = scale * Xm * sin(phi) * sin(kappa) - scale * Ym * sin(omega) * cos(phi) * sin(kappa) + scale * Zm *cos(omega) * cos(phi) * sin(kappa);
+        deltaky = (-scale * Xm * cos(phi) * cos(kappa)) + ((scale * Ym ) * (-cos(omega)*sin(kappa) - sin(omega) * sin(phi) * cos(kappa))) + ((scale * Zm) * (-sin(omega)*sin(kappa) + cos(omega)*sin(phi)*cos(kappa)));
+        deltatxy = 0;
+        deltatyy = 1;
+        deltatzy = 0;
+        deltascaley = Xm * Mmatrix(2,1) + Ym * Mmatrix(2,2) * Zm * Mmatrix(2,3);
 
-        deltaBy = det([0, 1, 0; ...
-                       xL, yL, -C; ...
-                       xR, yR, zR]);
 
-        deltaBz = det([0, 0, 1; ...
-                       xL, yL, -C; ...
-                       xR, yR, zR]);
-
-        deltaW = det([bx, by, bz; ...
-                      xL, yL, -C; ...
-                      0, -zR, yR]);
-
-        deltaPhi = det([bx, by, bz; ...
-                         xL, yL, -C; ...
-                         a, b, c]);
-
-        deltaKappa = det([bx, by, bz; ...
-                          xL, yL, -C; ...
-                          d, e, f]);
-
+        %derivates Z
+        deltaomegaz = -scale * Ym * cos(omega) * cos(phi) - scale * Zm * sin(omega) * cos(phi);
+        deltaphiz = scale * Xm * cos(phi) + scale * Ym * sin(omega) * sin(phi) - scale * Zm *cos(omega) * sin(phi);
+        deltakz = 0;
+        deltatxz = 0;
+        deltatyz = 0;
+        deltatzz = 1;
+        deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
+        
         A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
     end      
 end
@@ -126,9 +128,9 @@ end
 
 
 function M = M_transformation_Matrix(Xnot)
-    w = Xnot(3,1);
-    phi = Xnot(4,1);
-    kappa = Xnot(5,1);
+    w = Xnot(1,1);
+    phi = Xnot(2,1);
+    kappa = Xnot(3,1);
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
