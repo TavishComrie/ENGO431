@@ -13,6 +13,7 @@ basevector = load("baseVector");
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
+[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(c);
 [xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata);
 
 checkObjectCoords = [];
