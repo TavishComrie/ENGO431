@@ -7,11 +7,13 @@ tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
 
+Mimage = load()
+
 
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
-[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(c);
+[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(controlModelCoords);
 [xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata);
 
 checkObjectCoords = [];
@@ -36,3 +38,9 @@ end
 VectorPCLeft = tcheck;
 
 VectorPCRight = 
+
+Moverall = Mimage * transpose (Mcheck);
+
+w = atan2d(-Moverall(3,2),Moverall(3,3));
+phi = asind(Moverall(3,1));
+kappa = atan2d(-Moverall(2,1),Moverall(1,1));
