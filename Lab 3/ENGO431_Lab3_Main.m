@@ -15,6 +15,7 @@ c = 153.358;
 [xhatValidation, residualsValidation, RxValidation, dataPrimeValidation, MValidation] = performLeastSquaresAdjustment(datacheck, 152.15);
 [xhatTie, residualsTie, RxTie, dataPrimeTie, MTie] = performLeastSquaresAdjustment(tiePoints, c);
 
+baseVector = [92.000; xhatTie(1, 1); xhatTie(2, 1)];
 
 for i = 1:size(controlPoints, 1)
     vectorControl = [controlPoints(i, 3); controlPoints(i, 4); -c];
@@ -26,8 +27,6 @@ for i = 1:size(checkPoints, 1)
     dataPrimeCheck(i, :) = transpose(MTie) * vectorCheck;
 end
 
-dataPrimeControl
-dataPrimeCheck
 
 writematrix(xhatValidation, 'ROPCheck.txt')
 writematrix(residualsValidation, 'residualsCheck.txt')
@@ -49,6 +48,7 @@ xhatTie(3:5,1) = xhatTie(3:5,1) * 180 / pi;
 [xhatCheckSI, yPCheck] = performSpaceIntersection(checkPoints, dataPrimeCheck, xhatTie, c)
 
 
+writematrix(baseVector, "baseVector.txt")
 writematrix([ones(size(xhatTieSI, 1), 1), xhatTieSI], "tieModelCoords.txt")
 writematrix([ones(size(xhatControlSI, 1), 1), xhatControlSI], "controlModelCoords.txt")
 writematrix([ones(size(xhatCheckSI, 1), 1), xhatCheckSI], "checkModelCoords.txt")
