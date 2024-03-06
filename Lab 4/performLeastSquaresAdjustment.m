@@ -2,18 +2,33 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here
     
-    %In order 7x1, omega,phi,kappa,tx,ty,tz
+    %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
     xhat(7,1) = zeros;
-    bx = 92.000; 
-
-
+    Apri = 1;
+    CL = eye(size(data,1));
+    CL = 0.01 * CL;
+    P = invserse(CL);
        
-    threshold = [0.001;0.001;0.0001;0.0001;0.0001;];
+    %Straight level so omega,phi stay at 0
+    objectbearing = atan2(data(1,5)-data(2,5),data(1,6),data(2,6));
+    modelbearing = atan2(data(1,2)-data(2,2),data(1,3),data(2,3));
+    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2);
+    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2);
 
 
-    xprime = zeros(6,1);
-    yprime = zeros(6,1);
-    zprime = zeros(6,1);
+
+    xhat(3,1) = objectbearing - modelbearing;
+    xhat(7,1) = objectdistance / modeldistance;
+
+    robject = [data(1,5);data(1,6);data(1,7)];
+    rmodel = [data(1,2);data(1,3);data(1,4)];
+    t0 = robject - xhat(7,1) * M_transformation_Matrix(xhat) * rmodel;
+
+    xhat(4,1) = t0(1,1);
+    xhat(5,1) = t0(2,1);
+    xhat(6,1) = t0(3,1);
+    
+    threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
     
     counter = 0;
 
@@ -21,23 +36,9 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     while notConverged
         M = M_transformation_Matrix(xhat);
 
-        %KRISH TODO (set the input vars)   
-        for i = 1:6
-            mvectorXYZ = [data(i,3), data(i,4), -c];
-            [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
-        end
-
-        dataprime = [xprime, yprime, zprime];
-        %dataprime(:,1) = dataprime(:,1) + bx;
-        %dataprime(:,2) = dataprime(:,2) + xhat(1,1);
-        %dataprime(:,3) = dataprime(:,3) + xhat(2,1);
-
-
-        %RAYMOND TODO (set the input vars)
         A = findDesignMatrixA(data, dataprime, xhat, c, bx);
-
         
-        w = createMisclosure(xhat,data,dataprime,c,bx);
+        w = createMisclosure(xhat,data,M);
 
         N = transpose(A) * A;
         u = transpose(A) * w;
@@ -55,16 +56,7 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
 
     M = M_transformation_Matrix(xhat);
 
-    %KRISH TODO (set the input vars)   
-    for i = 1:6
-        mvectorXYZ = [data(i,3), data(i,4), -c];
-        [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
-    end
-
-    dataprime = [xprime, yprime, zprime];
-
-
-    w = createMisclosure(xhat,data,dataprime,c,bx);
+    w = createMisclosure(xhat,data,M);
     A = findDesignMatrixA(data, dataprime, xhat, c, bx);
     residuals = A * delta + w;
 
@@ -74,82 +66,80 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     Rx = corrcov(Cx);
 end
 
-function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-    for i = 1:6
-        xL = data(i, 1);
-        yL = data(i, 2);
+function A = findDesignMatrixA(data, xo, Mmatrix)        
+    for i = 1:size(data,1)
+        Xm = coords(i,1);
+        Ym = coords(i,2);
+        Zm = coords(i,3);
+ 
 
-        xR = dataPrime(i, 1);
-        yR = dataPrime(i, 2);
-        zR = dataPrime(i, 3);
+        omega = xo(1, 1);
+        phi = xo(2, 1);
+        kappa = xo(3,1);
+        tx = xo(4,1);
+        ty = xo(5,1);
+        yz = xo(6,1);
+        scale = xo(7,1);
 
-        by = xo(1, 1);
-        bz = xo(2, 1);
-        omega = xo(3, 1);
-        phi = xo(4, 1);
+        %X derivatives
+        deltaomegax = ((Ym * scale) * (-sin(omega) * sin(kappa) + cos(omega) * sin(phi) * cos(kappa))) + ((scale*Zm) * (cos(omega) * sin(kappa) + sin(omega) * sin(phi) * cos(kappa)));
+        deltaphix = -scale * Xm * sin(phi) * cos(kappa) + scale * Ym * sin(omega) * cos(phi) * cos(kappa)- scale * Zm *cos(omega) * cos(phi) * cos(kappa);
+        deltakx = (-scale * Xm * cos(phi) * sin(kappa) ) + ((scale * Ym ) * (cos(omega)*cos(kappa) - sin(omega) * sin(phi) * sin(kappa))) + ((scale * Zm) * (sin(omega)*cos(kappa) + cos(omega)*sin(phi)*sin(kappa)));
+        deltatxx = 1;
+        deltatyx = 0;
+        deltatzx = 0;
+        deltascalex = Xm * Mmatrix(1,1) + Ym * Mmatrix(1,2) * Zm * Mmatrix(1,3);
 
-        a = -yR * sin(omega) + zR * cos(omega);
-        b = xR * sin(omega);
-        c = -xR * cos(omega);
-        d = -yR * cos(omega) * cos(phi) - zR * sin(omega) * cos(phi);
-        e = xR * cos(omega) * cos(phi) - zR * sin(phi);
-        f = xR * sin(omega) * cos(phi) + yR * sin(phi);
+        %derivates Y
+        deltaomegay = ((Ym * scale) * (-sin(omega) * cos(kappa) - cos(omega) * sin(phi) * sin(kappa))) + ((scale*Zm) * (cos(omega) * cos(kappa) - sin(omega) * sin(phi) * sin(kappa)));
+        deltaphiy = scale * Xm * sin(phi) * sin(kappa) - scale * Ym * sin(omega) * cos(phi) * sin(kappa) + scale * Zm *cos(omega) * cos(phi) * sin(kappa);
+        deltaky = (-scale * Xm * cos(phi) * cos(kappa)) + ((scale * Ym ) * (-cos(omega)*sin(kappa) - sin(omega) * sin(phi) * cos(kappa))) + ((scale * Zm) * (-sin(omega)*sin(kappa) + cos(omega)*sin(phi)*cos(kappa)));
+        deltatxy = 0;
+        deltatyy = 1;
+        deltatzy = 0;
+        deltascaley = Xm * Mmatrix(2,1) + Ym * Mmatrix(2,2) * Zm * Mmatrix(2,3);
 
-        deltaBy = det([0, 1, 0; ...
-                       xL, yL, -C; ...
-                       xR, yR, zR]);
 
-        deltaBz = det([0, 0, 1; ...
-                       xL, yL, -C; ...
-                       xR, yR, zR]);
+        %derivates Z
+        deltaomegaz = -scale * Ym * cos(omega) * cos(phi) - scale * Zm * sin(omega) * cos(phi);
+        deltaphiz = scale * Xm * cos(phi) + scale * Ym * sin(omega) * sin(phi) - scale * Zm *cos(omega) * sin(phi);
+        deltakz = 0;
+        deltatxz = 0;
+        deltatyz = 0;
+        deltatzz = 1;
+        deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
+        
+        A(3i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
+        A(3i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
+        A(3i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
 
-        deltaW = det([bx, by, bz; ...
-                      xL, yL, -C; ...
-                      0, -zR, yR]);
-
-        deltaPhi = det([bx, by, bz; ...
-                         xL, yL, -C; ...
-                         a, b, c]);
-
-        deltaKappa = det([bx, by, bz; ...
-                          xL, yL, -C; ...
-                          d, e, f]);
-
-        A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
     end      
 end
 
 
-function w = createMisclosure(x0,data,dataprime,c,bx)
-    w(6,1)=zeros;
-    for i = 1:6
-        misclosure(3,3) = zeros;
-
-        misclosure(1,1) = bx;
-        misclosure(1,2:3) = x0(1:2,1);
-        misclosure(2,1:2) = data(i,1:2);
-        misclosure(2,3) = -1 * c;
-        misclosure(3,:) = dataprime(i,:);
-        
-        w(i,1) = det(misclosure);
-
+function w = createMisclosure(x0,data,M)
+    points = size(data,1);
+    w(points*3,1)=zeros;
+    for i = 1:points 
+        robject = [data(i,5);data(i,6);data(i,7)];
+        rmodel = [data(i,2);data(i,3);data(i,4)];
+        t = [x0(4,1);x0(5,1);x0(6,1)];
+        scale = x0(7,1);
+    
+        pointmisclosure = scale * M * rmodel + t - robject;
+    
+        w(3i-2,1) = pointmisclosure(1,1);
+        w(3i-1,1) = pointmisclosure(2,1);
+        w(3i,1) = pointmisclosure(3,1);
     end
 end
 
 
 function M = M_transformation_Matrix(Xnot)
-    w = Xnot(3,1);
-    phi = Xnot(4,1);
-    kappa = Xnot(5,1);
+    w = Xnot(1,1);
+    phi = Xnot(2,1);
+    kappa = Xnot(3,1);
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
-end
-
-
-function [xprime,yprime,zprime] = transformation(M, vector_x_y_z)
-    vector_intermediate = transpose(M) * transpose(vector_x_y_z);
-    xprime = vector_intermediate(1,1);
-    yprime = vector_intermediate(2,1);
-    zprime = vector_intermediate(3,1);
 end
