@@ -1,17 +1,16 @@
 function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     %UNTITLED2 Summary of this function goes here
-    %   Detailed explanation goes here
-    
+    %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
     xhat(7,1) = zeros;
     Apri = 1;
-    CL = eye(size(data,1));
+    CL = eye(size(data,1)*3);
     CL = (0.01^2) * CL;
-    P = invserse(CL);
+    P = inv(CL);
        
     %Straight level so omega,phi stay at 0
-    objectbearing = atan2(data(1,5)-data(2,5),data(1,6),data(2,6));
-    modelbearing = atan2(data(1,2)-data(2,2),data(1,3),data(2,3));
+    objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
+    modelbearing = atan2(data(1,2)-data(2,2),data(1,3)-data(2,3));
     objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2);
     modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2);
 
@@ -36,7 +35,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     while notConverged
         M = M_transformation_Matrix(xhat);
 
-        A = findDesignMatrixA(data, xhat, Mmatrix);
+        A = findDesignMatrixA(data, xhat, M);
         
         w = createMisclosure(xhat,data,M);
 
@@ -60,7 +59,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
 
 
     w = createMisclosure(xhat,data,M);
-    A = findDesignMatrixA(data, dataprime, xhat, c, bx);
+    A = findDesignMatrixA(data,xhat,M);
     residuals = A * delta + w;
 
     aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
@@ -70,6 +69,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
 end
 
 function A = findDesignMatrixA(data, xo, Mmatrix)        
+    A(size(data,1)*3,7) = zeros;
     for i = 1:size(data,1)
         Xm = data(i,2);
         Ym = data(i,3);
@@ -111,10 +111,11 @@ function A = findDesignMatrixA(data, xo, Mmatrix)
         deltatyz = 0;
         deltatzz = 1;
         deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
-        
-        A(3i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
-        A(3i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
-        A(3i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
+  
+
+        A(3*i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
+        A(3*i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
+        A(3*i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
 
     end      
 end
@@ -131,9 +132,9 @@ function w = createMisclosure(x0,data,M)
     
         pointmisclosure = scale * M * rmodel + t - robject;
     
-        w(3i-2,1) = pointmisclosure(1,1);
-        w(3i-1,1) = pointmisclosure(2,1);
-        w(3i,1) = pointmisclosure(3,1);
+        w(3*i-2,1) = pointmisclosure(1,1);
+        w(3*i-1,1) = pointmisclosure(2,1);
+        w(3*i,1) = pointmisclosure(3,1);
     end
 end
 
