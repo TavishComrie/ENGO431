@@ -6,6 +6,8 @@ checkdata = load('absolute orientation input data.txt');
 tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
+basevector = load("baseVector");
+
 
 
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
@@ -32,6 +34,6 @@ for i = 1:size(tieModelCoords(i,1))
     tieObjectCoords(i,:) = ModelTransformation(Scaletie,Mtie,ttie,tieModelCoords(i,:));
 end
 
-VectorPCLeft = tcheck;
+VectorPCLeft = t;
 
-VectorPCRight = 
+VectorPCRight = Scale * M * basevector + t;
