@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c)
+function [xhat, residuals,Rx, dataprime, M] = performLeastSquaresAdjustment(data, c)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here
     
@@ -11,9 +11,9 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     threshold = [0.001;0.001;0.0001;0.0001;0.0001;];
 
 
-    xprime = zeros(6,1);
-    yprime = zeros(6,1);
-    zprime = zeros(6,1);
+    xprime = zeros(size(data, 1), 1);
+    yprime = zeros(size(data, 1), 1);
+    zprime = zeros(size(data, 1), 1);
     
     counter = 0;
 
@@ -22,7 +22,7 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
         M = M_transformation_Matrix(xhat);
 
         %KRISH TODO (set the input vars)   
-        for i = 1:6
+        for i = 1:size(data, 1)
             mvectorXYZ = [data(i,3), data(i,4), -c];
             [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
         end
@@ -56,7 +56,7 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     M = M_transformation_Matrix(xhat);
 
     %KRISH TODO (set the input vars)   
-    for i = 1:6
+    for i = 1:size(data, 1)
         mvectorXYZ = [data(i,3), data(i,4), -c];
         [xprime(i),yprime(i),zprime(i)] = transformation(M,mvectorXYZ);
     end
@@ -75,7 +75,7 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
 end
 
 function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-    for i = 1:6
+    for i = 1:size(data, 1)
         xL = data(i, 1);
         yL = data(i, 2);
 
@@ -121,8 +121,8 @@ end
 
 
 function w = createMisclosure(x0,data,dataprime,c,bx)
-    w(6,1)=zeros;
-    for i = 1:6
+    w(size(data, 1), 1)=zeros;
+    for i = 1:size(data, 1)
         misclosure(3,3) = zeros;
 
         misclosure(1,1) = bx;

@@ -223,6 +223,13 @@ ylabel('y (mm)')
 title('Validation Image Point Residual Quiver Plot')
 print(gcf, '7', '-dpng', '-r300');
 
+% Data output
+controlPoints = [Xprime27(1:3, :), Yprime27(1:3, :), Xprime28(1:3, :), Yprime28(1:3, :)];
+checkPoints = [Xprime27(4:end, :), Yprime27(4:end, :), Xprime28(4:end, :), Yprime28(4:end, :)];
+
+writematrix(controlPoints, "controlPoints.txt")
+writematrix(checkPoints, "checkPoints.txt")
+
 %Function to populate the A matrix using the formula described
 % in the lab handout
 function A = makeA(fids)

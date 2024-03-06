@@ -4,7 +4,12 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
     xhat(7,1) = zeros;
-    %Straigh level so omega,phi stay at 0
+    Apri = 1;
+    CL = eye(size(data,1));
+    CL = 0.01 * CL;
+    P = invserse(CL);
+       
+    %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6),data(2,6));
     modelbearing = atan2(data(1,2)-data(2,2),data(1,3),data(2,3));
     objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2);
@@ -61,8 +66,8 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     Rx = corrcov(Cx);
 end
 
-function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-    for i = 1:6
+function A = findDesignMatrixA(data, xo, Mmatrix)        
+    for i = 1:size(data,1)
         Xm = coords(i,1);
         Ym = coords(i,2);
         Zm = coords(i,3);
@@ -104,7 +109,10 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
         deltatzz = 1;
         deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
         
-        A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
+        A(3i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
+        A(3i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
+        A(3i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
+
     end      
 end
 
