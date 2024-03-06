@@ -32,3 +32,7 @@ end
 for i = 1:size(tieModelCoords(i,1))
     tieObjectCoords(i,:) = ModelTransformation(Scaletie,Mtie,ttie,tieModelCoords(i,:));
 end
+
+VectorPCLeft = tcheck;
+
+VectorPCRight = 
