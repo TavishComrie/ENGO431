@@ -6,6 +6,10 @@ checkdata = load('absolute orientation input data.txt');
 tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
+controlReal = load("controlPointsReal.txt");
+checkReal = load("checkPointsReal.txt");
+
+mainData = [controlReal(:, 1), controlModelCoords(:, 2:4), controlReal(:, 2:4)];
 
 
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
