@@ -82,7 +82,7 @@ function A = findDesignMatrixA(data, xo, Mmatrix)
         scale = xo(7,1);
 
         %X derivatives
-        deltaomegax = ((Ym * scale) * (-sin(omega) * sin(kappa) + cos(omega) * sin(phi) * cos(kappa))) + ((scale*Zm) * (cos(omega) * sin(kappa) + sin(omega) * sin(phi) * cos(kappa)));
+        deltaomegax = ((Ym * scale) * ((-sin(omega) * sin(kappa)) + (cos(omega) * sin(phi) * cos(kappa)))) + ((scale*Zm) * (cos(omega) * sin(kappa) + sin(omega) * sin(phi) * cos(kappa)));
         deltaphix = -scale * Xm * sin(phi) * cos(kappa) + scale * Ym * sin(omega) * cos(phi) * cos(kappa)- scale * Zm *cos(omega) * cos(phi) * cos(kappa);
         deltakx = (-scale * Xm * cos(phi) * sin(kappa) ) + ((scale * Ym ) * (cos(omega)*cos(kappa) - sin(omega) * sin(phi) * sin(kappa))) + ((scale * Zm) * (sin(omega)*cos(kappa) + cos(omega)*sin(phi)*sin(kappa)));
         deltatxx = 1;

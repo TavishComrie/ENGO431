@@ -6,27 +6,49 @@ close all
 datacheck = load("relative orientation input data.txt");
 datacheck(:,1)=[];
 
-datamain = load("uofc relative orientation input data.txt");
 tiePoints = load("tiePoints.txt");
+controlPoints = load("controlPoints.txt");
+checkPoints = load("checkPoints.txt");
 
-[xhatCheck, residualsCheck, RxCheck, dataPrimeCheck] = performLeastSquaresAdjustment(datacheck, 152.15);
-%[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(datamain, 153.358)
-[xhatMain, residualsMain, RxMain, dataPrimeMain] = performLeastSquaresAdjustment(tiePoints, 153.358)
+c = 153.358;
 
-writematrix(xhatCheck, 'ROPCheck.txt')
-writematrix(residualsCheck, 'residualsCheck.txt')
-writematrix(RxCheck, 'CorrCheck.txt')
-writematrix(xhatMain, 'ROP.txt')
-writematrix(residualsMain, 'residuals.txt')
-writematrix(RxMain, 'Corr.txt')
+[xhatValidation, residualsValidation, RxValidation, dataPrimeValidation, MValidation] = performLeastSquaresAdjustment(datacheck, 152.15);
+[xhatTie, residualsTie, RxTie, dataPrimeTie, MTie] = performLeastSquaresAdjustment(tiePoints, c);
+
+
+for i = 1:size(controlPoints, 1)
+    vectorControl = [controlPoints(i, 3); controlPoints(i, 4); -c];
+    dataPrimeControl(i, :) = transpose(MTie) * vectorControl;
+end
+
+for i = 1:size(checkPoints, 1)
+    vectorCheck = [checkPoints(i, 3); checkPoints(i, 4); -c];
+    dataPrimeCheck(i, :) = transpose(MTie) * vectorCheck;
+end
+
+dataPrimeControl
+dataPrimeCheck
+
+writematrix(xhatValidation, 'ROPCheck.txt')
+writematrix(residualsValidation, 'residualsCheck.txt')
+writematrix(RxValidation, 'CorrCheck.txt')
+writematrix(xhatTie, 'ROP.txt')
+writematrix(residualsTie, 'residuals.txt')
+writematrix(RxTie, 'Corr.txt')
 
 
 %Puts into dd to check
-xhatCheck(3:5,1) = xhatCheck(3:5,1) * 180 / pi;
-xhatMain(3:5,1) = xhatMain(3:5,1) * 180 / pi;
+xhatValidation(3:5,1) = xhatValidation(3:5,1) * 180 / pi;
+xhatTie(3:5,1) = xhatTie(3:5,1) * 180 / pi;
 
 
 % Performing Space Intersection
-[xhatCheckSI, yPCheck] = performSpaceIntersection(datacheck, dataPrimeCheck, xhatCheck, 152.15)
-[xhatMainSI, yPMain] = performSpaceIntersection(datamain, dataPrimeMain, xhatMain, 153.358)
+[xhatValidationSI, yPValidation] = performSpaceIntersection(datacheck, dataPrimeValidation, xhatValidation, 152.15)
+[xhatTieSI, yPTie] = performSpaceIntersection(tiePoints, dataPrimeTie, xhatTie, c)
+[xhatControlSI, yPControl] = performSpaceIntersection(controlPoints, dataPrimeControl, xhatTie, c)
+[xhatCheckSI, yPCheck] = performSpaceIntersection(checkPoints, dataPrimeCheck, xhatTie, c)
 
+
+writematrix([ones(size(xhatTieSI, 1), 1), xhatTieSI], "tieModelCoords.txt")
+writematrix([ones(size(xhatControlSI, 1), 1), xhatControlSI], "controlModelCoords.txt")
+writematrix([ones(size(xhatCheckSI, 1), 1), xhatCheckSI], "checkModelCoords.txt")
