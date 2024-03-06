@@ -7,13 +7,18 @@ tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
 basevector = load("baseVector.txt");
+controlReal = load("controlPointsReal.txt");
+checkReal = load("checkPointsReal.txt");
 
+Mimage = load('rotationMatrixRO.txt');
 
+mainData = [controlReal(:, 1), controlModelCoords(:, 2:4), controlReal(:, 2:4)];
+basevector = load("baseVector.txt");
 
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
-[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(c);
+[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(controlModelCoords);
 [xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata);
 
 checkObjectCoords = [];
@@ -37,6 +42,13 @@ end
 
 VectorPCLeft = t;
 
+VectorPCRight = NULL; 
+
+Moverall = Mimage * transpose (Mcheck);
+
+w = atan2d(-Moverall(3,2),Moverall(3,3));
+phi = asind(Moverall(3,1));
+kappa = atan2d(-Moverall(2,1),Moverall(1,1));
 VectorPCRight = Scale * M * basevector + t;
 
 num_variables = 3; 
