@@ -11,8 +11,8 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
     modelbearing = atan2(data(1,2)-data(2,2),data(1,3)-data(2,3));
-    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2);
-    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2);
+    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2+(data(1,6)-data(2,6))^2);
+    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2+(data(1,4)-data(1,4))^2);
 
 
 
@@ -29,22 +29,26 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     
     threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
     
+    xhat
+
     counter = 0;
 
     notConverged = true;
     while notConverged
-        M = M_transformation_Matrix(xhat);
+        M = M_transformation_Matrix(xhat)
 
-        A = findDesignMatrixA(data, xhat, M);
+        A = findDesignMatrixA(data, xhat, M)
         
-        w = createMisclosure(xhat,data,M);
+        w = createMisclosure(xhat,data,M)
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
 
+        cond(N)
+
         delta = -1 * (inv(N) * u);
 
-        xhat = xhat + delta;
+        xhat = xhat + delta
 
         check = delta > threshold;
         notConverged = ismember(1,check);
