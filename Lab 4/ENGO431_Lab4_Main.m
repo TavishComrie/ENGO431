@@ -10,11 +10,12 @@ controlReal = load("controlPointsReal.txt");
 checkReal = load("checkPointsReal.txt");
 
 mainData = [controlReal(:, 1), controlModelCoords(:, 2:4), controlReal(:, 2:4)];
-
+basevector = load("baseVector.txt");
 
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
+[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(c);
 [xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata);
 
 checkObjectCoords = [];
@@ -35,3 +36,7 @@ end
 for i = 1:size(tieModelCoords(i,1))
     tieObjectCoords(i,:) = ModelTransformation(Scaletie,Mtie,ttie,tieModelCoords(i,:));
 end
+
+VectorPCLeft = t;
+
+VectorPCRight = Scale * M * basevector + t;
