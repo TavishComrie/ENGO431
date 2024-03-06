@@ -54,7 +54,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     end
 
     M = M_transformation_Matrix(xhat);
-    t = [x0(4,1);x0(5,1);x0(6,1)];
+    t = [xhat(4,1);xhat(5,1);xhat(6,1)];
     scale = xhat(7,1);
 
 
