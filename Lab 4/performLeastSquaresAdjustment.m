@@ -5,8 +5,10 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     %In order 7x1, omega,phi,kappa,tx,ty,tz
     xhat(7,1) = zeros;
     bx = 92.000; 
-
-
+    Apri = 1;
+    CL = eye(size(data,1));
+    CL = 0.01 * CL;
+    P = invserse(CL);
        
     threshold = [0.001;0.001;0.0001;0.0001;0.0001;];
 
@@ -74,8 +76,8 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     Rx = corrcov(Cx);
 end
 
-function A = findDesignMatrixA(data, dataPrime, xo, C, bx)        
-    for i = 1:6
+function A = findDesignMatrixA(data, xo, Mmatrix)        
+    for i = 1:size(data,1)
         Xm = coords(i,1);
         Ym = coords(i,2);
         Zm = coords(i,3);
@@ -117,7 +119,10 @@ function A = findDesignMatrixA(data, dataPrime, xo, C, bx)
         deltatzz = 1;
         deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
         
-        A(i, :) = [deltaBy, deltaBz, deltaW, deltaPhi, deltaKappa];
+        A(3i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
+        A(3i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
+        A(3i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
+
     end      
 end
 
