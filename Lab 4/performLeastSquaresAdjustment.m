@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c)
+function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here
     
@@ -6,7 +6,7 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     xhat(7,1) = zeros;
     Apri = 1;
     CL = eye(size(data,1));
-    CL = 0.01 * CL;
+    CL = (0.01^2) * CL;
     P = invserse(CL);
        
     %Straight level so omega,phi stay at 0
@@ -36,14 +36,14 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     while notConverged
         M = M_transformation_Matrix(xhat);
 
-        A = findDesignMatrixA(data, dataprime, xhat, c, bx);
+        A = findDesignMatrixA(data, xhat, Mmatrix);
         
         w = createMisclosure(xhat,data,M);
 
-        N = transpose(A) * A;
-        u = transpose(A) * w;
+        N = transpose(A) * P * A;
+        u = transpose(A) * P * w;
 
-        delta = -1 * inv(N) * u;
+        delta = -1 * (inv(N) * u);
 
         xhat = xhat + delta;
 
@@ -55,12 +55,15 @@ function [xhat, residuals,Rx, dataprime] = performLeastSquaresAdjustment(data, c
     end
 
     M = M_transformation_Matrix(xhat);
+    t = [x0(4,1);x0(5,1);x0(6,1)];
+    scale = xhat(7,1);
+
 
     w = createMisclosure(xhat,data,M);
     A = findDesignMatrixA(data, dataprime, xhat, c, bx);
     residuals = A * delta + w;
 
-    aPost = transpose(residuals) * residuals;
+    aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
     Cx = aPost * inv(N);
 
     Rx = corrcov(Cx);
@@ -68,9 +71,9 @@ end
 
 function A = findDesignMatrixA(data, xo, Mmatrix)        
     for i = 1:size(data,1)
-        Xm = coords(i,1);
-        Ym = coords(i,2);
-        Zm = coords(i,3);
+        Xm = data(i,2);
+        Ym = data(i,3);
+        Zm = data(i,4);
  
 
         omega = xo(1, 1);
