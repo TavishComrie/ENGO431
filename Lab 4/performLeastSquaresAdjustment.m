@@ -5,8 +5,8 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     xhat(7,1) = zeros;
     Apri = 1;
     CL = eye(size(data,1)*3);
-    CL = (0.01^2) * CL;
-    P = inv(CL)
+    CL = (0.01^2) *CL;
+    P = inv(CL);
        
     %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
