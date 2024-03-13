@@ -36,7 +36,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     counter = 0;
 
     notConverged = true;
-    while notConverged
+    while counter<4
         M = M_transformation_Matrix(xhat)
 
         A = findDesignMatrixA(data, xhat, M)
