@@ -21,8 +21,8 @@ basevector = load("baseVector.txt");
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
-[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(mainData);
-[xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata);
+[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(mainData,0.01);
+[xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata,1);
 
 checkObjectCoords = [];
 controlObjectCoords = [];

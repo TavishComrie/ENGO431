@@ -1,11 +1,11 @@
-function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
+function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, weight)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
     xhat(7,1) = zeros;
     Apri = 1;
     CL = eye(size(data,1)*3);
-    CL = (0.01^2) * CL;
+    CL = (weight^2) * CL;
     P = inv(CL)
        
     %Straight level so omega,phi stay at 0
@@ -58,6 +58,8 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
         counter = counter + 1;
 
     end
+    residuals = A * delta + w;
+
 
     M = M_transformation_Matrix(xhat);
     t = [xhat(4,1);xhat(5,1);xhat(6,1)];
@@ -66,7 +68,6 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
 
     w = createMisclosure(xhat,data,M);
     A = findDesignMatrixA(data,xhat,M);
-    residuals = A * delta + w;
 
     aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
     Cx = aPost * inv(N);
