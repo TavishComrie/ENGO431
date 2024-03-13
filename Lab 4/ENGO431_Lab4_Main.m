@@ -4,7 +4,7 @@ close all
 
 format long G
 
-checkdata = load('absolute orientation input data.txt');
+validationdata = load('absolute orientation input data.txt');
 tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
@@ -24,13 +24,14 @@ basevector = load("baseVector.txt");
 [xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(mainData,0.01);
 [xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(checkdata,1);
 
+
 checkObjectCoords = [];
 controlObjectCoords = [];
 tieObjectCoords = [];
+disp("test")
 
-
-for i = 1:size(checkModelCoords, 1)
-    checkObjectCoords(i,:) = ModelTransformation(scale,M,t,checkModelCoords(i,:));
+for i = 1:size(validationdata, 1)
+    checkObjectCoords(i,:) = ModelTransformation(Scalecheck,Mcheck,tcheck,validationdata(i,:));
 end
 
 
@@ -43,16 +44,15 @@ for i = 1:size(tieModelCoords,1)
     tieObjectCoords(i,:) = ModelTransformation(scale,M,t,tieModelCoords(i,:));
 end
 
-VectorPCLeft = t;
 
-VectorPCRight = NULL; 
+VectorPCLeft = t;
 
 Moverall = Mimage * transpose (Mcheck);
 
 w = atan2d(-Moverall(3,2),Moverall(3,3));
 phi = asind(Moverall(3,1));
 kappa = atan2d(-Moverall(2,1),Moverall(1,1));
-VectorPCRight = Scale * M * basevector + t;
+VectorPCRight = scale * M * basevector + t;
 
 num_variables = 3; 
 residuals_matrix = reshape(residuals, num_variables, []);

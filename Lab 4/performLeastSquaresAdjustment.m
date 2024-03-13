@@ -7,6 +7,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, we
     CL = eye(size(data,1)*3);
     CL = (weight^2) * CL;
     P = inv(CL)
+
        
     %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
@@ -19,8 +20,8 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, we
     xhat(3,1) = objectbearing - modelbearing;
     xhat(7,1) = objectdistance / modeldistance;
 
-    robject = [data(1,5);data(1,6);data(1,7)];
-    rmodel = [data(1,2);data(1,3);data(1,4)];
+    robject = [data(1,5); data(1,6); data(1,7)];
+    rmodel = [data(1,2); data(1,3); data(1,4)];
     t0 = robject - xhat(7,1) * M_transformation_Matrix(xhat) * rmodel;
 
     xhat(4,1) = t0(1,1);
@@ -56,7 +57,6 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, we
         notConverged = ismember(1,check);
 
         counter = counter + 1;
-
     end
     residuals = A * delta + w;
 
