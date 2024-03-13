@@ -2,6 +2,8 @@ clc
 clear
 close all
 
+format long G
+
 checkdata = load('absolute orientation input data.txt');
 tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
@@ -9,6 +11,7 @@ checkModelCoords = load('checkModelCoords.txt');
 basevector = load("baseVector.txt");
 controlReal = load("controlPointsReal.txt");
 checkReal = load("checkPointsReal.txt");
+
 
 Mimage = load('rotationMatrixRO.txt');
 

@@ -6,7 +6,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     Apri = 1;
     CL = eye(size(data,1)*3);
     CL = (0.01^2) * CL;
-    P = inv(CL);
+    P = inv(CL)
        
     %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
@@ -29,7 +29,9 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     
     threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
     
-    xhat
+    disp(xhat)
+
+    
 
     counter = 0;
 
@@ -54,6 +56,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
         notConverged = ismember(1,check);
 
         counter = counter + 1;
+        return
 
     end
 
