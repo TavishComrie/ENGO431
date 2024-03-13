@@ -55,6 +55,8 @@ kappa = atan2d(-Moverall(2,1),Moverall(1,1));
 
 VectorPCRight = scale * M * basevector + t;
 
+vectorPC = [VectorPCLeft; VectorPCRight]
+
 num_variables = 3; 
 residuals_matrix = reshape(residuals, num_variables, []);
 

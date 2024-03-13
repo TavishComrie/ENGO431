@@ -13,6 +13,6 @@ function [differences, accuracies] = performAccuracyAssesment(objectCoordsPC, co
 
 
 
-    differences = realCheckPoints(:, ) - calcCheckPoints;
+    differencesX = realCheckPoints(:, 5:7) - calcCheckPoints(:, :);
 
 end
