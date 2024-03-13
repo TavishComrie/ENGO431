@@ -11,8 +11,8 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     %Straight level so omega,phi stay at 0
     objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
     modelbearing = atan2(data(1,2)-data(2,2),data(1,3)-data(2,3));
-    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2+(data(1,6)-data(2,6))^2);
-    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2+(data(1,4)-data(1,4))^2);
+    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2+(data(1,7)-data(2,7))^2);
+    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2+(data(1,4)-data(2,4))^2);
 
 
 
@@ -36,7 +36,7 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
     counter = 0;
 
     notConverged = true;
-    while counter<4
+    while notConverged
         M = M_transformation_Matrix(xhat)
 
         A = findDesignMatrixA(data, xhat, M)
@@ -56,7 +56,6 @@ function [xhat, residuals,Rx,M,t,scale] = performLeastSquaresAdjustment(data, c)
         notConverged = ismember(1,check);
 
         counter = counter + 1;
-        return
 
     end
 
@@ -92,13 +91,13 @@ function A = findDesignMatrixA(data, xo, Mmatrix)
         scale = xo(7,1);
 
         %X derivatives
-        deltaomegax = ((Ym * scale) * ((-sin(omega) * sin(kappa)) + (cos(omega) * sin(phi) * cos(kappa)))) + ((scale*Zm) * (cos(omega) * sin(kappa) + sin(omega) * sin(phi) * cos(kappa)));
-        deltaphix = -scale * Xm * sin(phi) * cos(kappa) + scale * Ym * sin(omega) * cos(phi) * cos(kappa)- scale * Zm *cos(omega) * cos(phi) * cos(kappa);
+        deltaomegax = ((Ym * scale) * ((-sin(omega) * sin(kappa)) + (cos(omega) * sin(phi) * cos(kappa)))) + ((scale*Zm) * ((cos(omega) * sin(kappa)) + sin(omega) * sin(phi) * cos(kappa)));
+        deltaphix = (-scale * Xm * sin(phi) * cos(kappa)) + (scale * Ym * sin(omega) * cos(phi) * cos(kappa))- (scale * Zm *cos(omega) * cos(phi) * cos(kappa));
         deltakx = (-scale * Xm * cos(phi) * sin(kappa) ) + ((scale * Ym ) * (cos(omega)*cos(kappa) - sin(omega) * sin(phi) * sin(kappa))) + ((scale * Zm) * (sin(omega)*cos(kappa) + cos(omega)*sin(phi)*sin(kappa)));
         deltatxx = 1;
         deltatyx = 0;
         deltatzx = 0;
-        deltascalex = Xm * Mmatrix(1,1) + Ym * Mmatrix(1,2) * Zm * Mmatrix(1,3);
+        deltascalex = Xm * Mmatrix(1,1) + Ym * Mmatrix(1,2) + Zm * Mmatrix(1,3);
 
         %derivates Y
         deltaomegay = ((Ym * scale) * (-sin(omega) * cos(kappa) - cos(omega) * sin(phi) * sin(kappa))) + ((scale*Zm) * (cos(omega) * cos(kappa) - sin(omega) * sin(phi) * sin(kappa)));
@@ -107,7 +106,7 @@ function A = findDesignMatrixA(data, xo, Mmatrix)
         deltatxy = 0;
         deltatyy = 1;
         deltatzy = 0;
-        deltascaley = Xm * Mmatrix(2,1) + Ym * Mmatrix(2,2) * Zm * Mmatrix(2,3);
+        deltascaley = Xm * Mmatrix(2,1) + Ym * Mmatrix(2,2) + Zm * Mmatrix(2,3);
 
 
         %derivates Z
@@ -117,7 +116,7 @@ function A = findDesignMatrixA(data, xo, Mmatrix)
         deltatxz = 0;
         deltatyz = 0;
         deltatzz = 1;
-        deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) * Zm * Mmatrix(3,3);
+        deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) + Zm * Mmatrix(3,3);
   
 
         A(3*i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];

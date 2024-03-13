@@ -5,7 +5,7 @@ function [ro] = ModelTransformation(Scale,M,t,r)
 ri = r(:,[2,3,4]);
 
 
-ro = (Scale*M*ri)+t;
+ro = (Scale.*M*ri)+t;
 
 end
 

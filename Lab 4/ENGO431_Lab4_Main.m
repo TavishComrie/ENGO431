@@ -29,18 +29,18 @@ controlObjectCoords = [];
 tieObjectCoords = [];
 
 
-for i = 1:size(checkModelCoords(i,1))
-    checkObjectCoords(i,:) = ModelTransformation(Scalecheck,Mcheck,tcheck,checkModelCoords(i,:));
+for i = 1:size(checkModelCoords, 1)
+    checkObjectCoords(i,:) = ModelTransformation(scale,M,t,checkModelCoords(i,:));
 end
 
 
-for i = 1:size(controlModelCoords(i,1))
-    controlObjectCoords(i,:) = ModelTransformation(Scalecontrol,Mcontrol,tcontrol,controlModelCoords(i,:));
+for i = 1:size(controlModelCoords,1)
+    controlObjectCoords(i,:) = ModelTransformation(scale,M,t,controlModelCoords(i,:));
 end
 
 
-for i = 1:size(tieModelCoords(i,1))
-    tieObjectCoords(i,:) = ModelTransformation(Scaletie,Mtie,ttie,tieModelCoords(i,:));
+for i = 1:size(tieModelCoords,1)
+    tieObjectCoords(i,:) = ModelTransformation(scale,M,t,tieModelCoords(i,:));
 end
 
 VectorPCLeft = t;
