@@ -43,8 +43,8 @@ for i = 1:size(tieModelCoords,1)
     tieObjectCoords(i,:) = ModelTransformation(scale,M,t,tieModelCoords(i,:));
 end
 
-VectorPCLeft = t;
 
+VectorPCLeft = t;
 
 Moverall = Mimage * transpose (Mcheck);
 
