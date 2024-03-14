@@ -31,9 +31,12 @@ tieObjectCoords = [];
 disp("test")
 
 for i = 1:size(validationdata, 1)
-    checkObjectCoords(i,:) = ModelTransformation(Scalecheck,Mcheck,tcheck,validationdata(i,:));
+    validationObjectCoords(i,:) = ModelTransformation(Scalecheck,Mcheck,tcheck,validationdata(i,:));
 end
 
+for i = 1:size(checkModelCoords, 1)
+    checkObjectCoords(i,:) = ModelTransformation(scale,M,t,checkModelCoords(i,:));
+end
 
 for i = 1:size(controlModelCoords,1)
     controlObjectCoords(i,:) = ModelTransformation(scale,M,t,controlModelCoords(i,:));
@@ -55,7 +58,7 @@ kappa = atan2d(-Moverall(2,1),Moverall(1,1));
 
 VectorPCRight = scale * M * basevector + t;
 
-vectorPC = [VectorPCLeft; VectorPCRight]
+vectorPC = [VectorPCLeft, VectorPCRight]
 
 num_variables = 3; 
 residuals_matrix = reshape(residuals, num_variables, []);
@@ -67,4 +70,4 @@ rmseX = rms(residuals_x)
 rmseY = rms(residuals_y)
 rmseZ = rms(residuals_z)
 
-
+[checkDifferences, objectPointAccuracies] = performAccuracyAssesment(vectorPC, controlObjectCoords, checkReal, checkObjectCoords, basevector, 153.358)
