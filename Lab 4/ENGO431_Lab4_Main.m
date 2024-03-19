@@ -110,5 +110,5 @@ objectBaseVector = [vectorPC(1, 2) - vectorPC(1, 1);
                     vectorPC(2, 2) - vectorPC(2, 1);
                     vectorPC(3, 2) - vectorPC(3, 1)];
 
-[checkDifferencesValidation, objectPointAccuraciesValidation] = performAccuracyAssesment(vectorPCValidation, validationObjectCoords, validationdata(:, 5:7), validationObjectCoords, objectBaseVectorValidation, 152.15, 1E-5)
-[checkDifferences, objectPointAccuracies] = performAccuracyAssesment(vectorPC, controlObjectCoords, checkReal(:, 2:4), checkObjectCoords, objectBaseVector, 153.358, 0.004E-3)
+[checkDifferencesValidation, objectPointAccuraciesValidation] = performAccuracyAssesment(vectorPCValidation, validationObjectCoords, validationdata(:, 5:7), validationObjectCoords, objectBaseVectorValidation, 152.15, 1E-5);
+[checkDifferences, objectPointAccuracies] = performAccuracyAssesment(vectorPC, controlObjectCoords, checkReal(:, 2:4), checkObjectCoords, objectBaseVector, 153.358, 0.004E-3);
