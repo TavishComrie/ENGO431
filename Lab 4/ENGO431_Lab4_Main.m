@@ -30,7 +30,6 @@ basevector = load("baseVector.txt");
 checkObjectCoords = [];
 controlObjectCoords = [];
 tieObjectCoords = [];
-disp("test")
 
 for i = 1:size(validationdata, 1)
     validationObjectCoords(i,:) = ModelTransformation(scaleValidation,MValidation,tValidation,validationdata(i,:));
