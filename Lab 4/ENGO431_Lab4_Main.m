@@ -21,8 +21,8 @@ basevector = load("baseVector.txt");
 %FORMAT: ID X_m Y_m Z_m X_o Y_o Z_o
 %UNITS: model coordinates in mm, object coordinates in m
 
-[xhat, residuals, Rx, M,t,scale] = performLeastSquaresAdjustment(mainData,0.1);
-[xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck] = performLeastSquaresAdjustment(validationdata,1);
+[xhat, residuals, Rx, M,t,scale, RedundancyNumbers] = performLeastSquaresAdjustment(mainData,0.1);
+[xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck, RedundancyNumbersCheck] = performLeastSquaresAdjustment(validationdata,1);
 
 
 checkObjectCoords = [];
@@ -60,8 +60,8 @@ VectorPCRight = scale * M * basevector + t;
 
 vectorPC = [VectorPCLeft, VectorPCRight]
 
-num_variables = 3; 
-residuals_matrix = reshape(residuals, num_variables, []);
+num_variables = 6; 
+residuals_matrix = reshape(residualsCheck, num_variables, []);
 
 residuals_x = residuals_matrix(1, :);
 residuals_y = residuals_matrix(2, :);
