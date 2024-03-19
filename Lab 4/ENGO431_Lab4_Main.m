@@ -93,14 +93,15 @@ extractedAngles = [w_L, phi_L, kappa_L;
 
 
 num_variables = 3; 
-residuals_matrix = reshape(residuals, num_variables, []);
+residuals_matrix = reshape(residualsValidation, num_variables, []);
+residuals_matrix;
 
 residuals_x = residuals_matrix(1, :);
 residuals_y = residuals_matrix(2, :);
 residuals_z = residuals_matrix(3, :);
-rmseX = rms(residuals_x)
-rmseY = rms(residuals_y)
-rmseZ = rms(residuals_z)
+rmseX = rms(residuals_x);
+rmseY = rms(residuals_y);
+rmseZ = rms(residuals_z);
 
 objectBaseVectorValidation = [vectorPCValidation(1, 2) - vectorPCValidation(1, 1);
                               vectorPCValidation(2, 2) - vectorPCValidation(2, 1);
