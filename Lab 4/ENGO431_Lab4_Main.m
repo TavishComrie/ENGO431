@@ -8,12 +8,14 @@ validationdata = load('absolute orientation input data.txt');
 tieModelCoords = load('tieModelCoords.txt');
 controlModelCoords = load('controlModelCoords.txt');
 checkModelCoords = load('checkModelCoords.txt');
+baseVectorValidation = load("validationBaseVector.txt");
 basevector = load("baseVector.txt");
 controlReal = load("controlPointsReal.txt");
 checkReal = load("checkPointsReal.txt");
 
-
-Mimage = load('rotationMatrixRO.txt');
+MimageL = eye(3, 3);
+MimageR_Validation = load("validationRotationMatrixRO.txt");
+MimageR = load('rotationMatrixRO.txt');
 
 mainData = [controlReal(:, 1), controlModelCoords(:, 2:4), controlReal(:, 2:4)];
 basevector = load("baseVector.txt");
@@ -28,10 +30,9 @@ basevector = load("baseVector.txt");
 checkObjectCoords = [];
 controlObjectCoords = [];
 tieObjectCoords = [];
-disp("test")
 
 for i = 1:size(validationdata, 1)
-    validationObjectCoords(i,:) = ModelTransformation(Scalecheck,Mcheck,tcheck,validationdata(i,:));
+    validationObjectCoords(i,:) = ModelTransformation(scaleValidation,MValidation,tValidation,validationdata(i,:));
 end
 
 for i = 1:size(checkModelCoords, 1)
@@ -48,26 +49,66 @@ for i = 1:size(tieModelCoords,1)
 end
 
 
+vectorPCLeftValidation = tValidation;
 VectorPCLeft = t;
 
-Moverall = Mimage * transpose (Mcheck);
-
-w = atan2d(-Moverall(3,2),Moverall(3,3));
-phi = asind(Moverall(3,1));
-kappa = atan2d(-Moverall(2,1),Moverall(1,1));
-
+vectorPCRightValidation = scaleValidation * MValidation * baseVectorValidation + tValidation;
 VectorPCRight = scale * M * basevector + t;
 
-vectorPC = [VectorPCLeft, VectorPCRight]
+vectorPCValidation = [vectorPCLeftValidation, vectorPCRightValidation];
+vectorPC = [VectorPCLeft, VectorPCRight];
 
-num_variables = 6; 
-residuals_matrix = reshape(residualsCheck, num_variables, []);
+
+Moi_L_Validation = MimageL * transpose(MValidation);
+Moi_R_Validation = MimageR_Validation * transpose(MValidation);
+
+Moi_L = MimageL * transpose(M);
+Moi_R = MimageR * transpose(M);
+
+
+w_L_Validation = atan2d(-Moi_L_Validation(3,2), Moi_L_Validation(3,3));
+phi_L_Validation = asind(Moi_L_Validation(3,1));
+kappa_L_Validation = atan2d(-Moi_L_Validation(2,1),Moi_L_Validation(1,1));
+
+w_R_Validation = atan2d(-Moi_R_Validation(3,2),Moi_R_Validation(3,3));
+phi_R_Validation = asind(Moi_R_Validation(3,1));
+kappa_R_Validation = atan2d(-Moi_R_Validation(2,1),Moi_R_Validation(1,1));
+
+
+w_L = atan2d(-Moi_L(3,2),Moi_L(3,3));
+phi_L = asind(Moi_L(3,1));
+kappa_L = atan2d(-Moi_L(2,1),Moi_L(1,1));
+
+w_R = atan2d(-Moi_R(3,2),Moi_R(3,3));
+phi_R = asind(Moi_R(3,1));
+kappa_R = atan2d(-Moi_R(2,1),Moi_R(1,1));
+
+extractedAnglesValidation = [w_L_Validation, phi_L_Validation, kappa_L_Validation;
+                             w_R_Validation, phi_R_Validation, kappa_R_Validation];
+
+extractedAngles = [w_L, phi_L, kappa_L;
+                   w_R, phi_R, kappa_R];
+
+
+
+num_variables = 3; 
+residuals_matrix = reshape(residualsValidation, num_variables, []);
+residuals_matrix;
 
 residuals_x = residuals_matrix(1, :);
 residuals_y = residuals_matrix(2, :);
 residuals_z = residuals_matrix(3, :);
-rmseX = rms(residuals_x)
-rmseY = rms(residuals_y)
-rmseZ = rms(residuals_z)
+rmseX = rms(residuals_x);
+rmseY = rms(residuals_y);
+rmseZ = rms(residuals_z);
 
-[checkDifferences, objectPointAccuracies] = performAccuracyAssesment(vectorPC, controlObjectCoords, checkReal, checkObjectCoords, basevector, 153.358)
+objectBaseVectorValidation = [vectorPCValidation(1, 2) - vectorPCValidation(1, 1);
+                              vectorPCValidation(2, 2) - vectorPCValidation(2, 1);
+                              vectorPCValidation(3, 2) - vectorPCValidation(3, 1)];
+
+objectBaseVector = [vectorPC(1, 2) - vectorPC(1, 1);
+                    vectorPC(2, 2) - vectorPC(2, 1);
+                    vectorPC(3, 2) - vectorPC(3, 1)];
+
+[checkDifferencesValidation, objectPointAccuraciesValidation] = performAccuracyAssesment(vectorPCValidation, validationObjectCoords, validationdata(:, 5:7), validationObjectCoords, objectBaseVectorValidation, 152.15, 1E-5);
+[checkDifferences, objectPointAccuracies] = performAccuracyAssesment(vectorPC, controlObjectCoords, checkReal(:, 2:4), checkObjectCoords, objectBaseVector, 153.358, 0.004E-3);
