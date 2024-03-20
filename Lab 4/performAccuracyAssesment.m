@@ -7,7 +7,7 @@ function [differences, accuracies] = performAccuracyAssesment(objectCoordsPC, co
     S = (H - h) / (c * 10^-3);
 
     baseMagnitude = sqrt(baseVector(1, 1)^2 + baseVector(2, 1)^2 + baseVector(3, 1)^2);
-    BH = baseMagnitude / (H - h);
+    BH = baseMagnitude / (H - h)
 
     accuracyX = S * imagePointPrecision;
     accuracyY = accuracyX;
