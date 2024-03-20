@@ -30,3 +30,6 @@ rightImageCoords = [imageCoordsMain(:, 1), imageCoordsMain(:, 4:5)];
 % (1) Point Number, 
 % (2) X-Coordinate (Object Space), (3) Y-Coordinate (Object Space), (4) Z-Coordinate (Object Space)
 objectCoordsMain = load("objectCoordsMain.txt");
+
+
+
