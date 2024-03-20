@@ -23,13 +23,8 @@ function [differences, accuracies] = performAccuracyAssesment(objectCoordsPC, co
 
     S = (H - h) / (c * 10^-3);  % Computing the scale of the image
 
-<<<<<<< Updated upstream
-    baseMagnitude = sqrt(baseVector(1, 1)^2 + baseVector(2, 1)^2 + baseVector(3, 1)^2);
-    BH = baseMagnitude / (H - h)
-=======
     baseMagnitude = sqrt(baseVector(1, 1)^2 + baseVector(2, 1)^2 + baseVector(3, 1)^2); % Computing the magnitude of the base vector
     BH = baseMagnitude / (H - h);                                                       % Computing the base to height ratio
->>>>>>> Stashed changes
 
     accuracyX = S * imagePointPrecision;                    % Computing the accuracy in the x-coordinate
     accuracyY = accuracyX;                                  % Computing the accuracy in the y-coordinate
