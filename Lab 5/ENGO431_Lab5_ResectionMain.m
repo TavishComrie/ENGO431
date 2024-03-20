@@ -17,7 +17,19 @@ validationResectionEOPs = load("resectionEOPs.txt");
 
 
 % Format: 
+% (1) Point Number, 
+% (2) X-Coordinate (Left Image), (3) Y-Coordinate (Left Image), 
+% (4) X-Coordinate (Right Image), (5) Y-Coordinate (Right Image)
+imageCoordsMain = load("imageCoordsMain.txt");
+
+leftImageCoords = [imageCoordsMain(:, 1), imageCoordsMain(:, 2:3)];
+rightImageCoords = [imageCoordsMain(:, 1), imageCoordsMain(:, 4:5)];
 
 
 % Format: 
+% (1) Point Number, 
+% (2) X-Coordinate (Object Space), (3) Y-Coordinate (Object Space), (4) Z-Coordinate (Object Space)
+objectCoordsMain = load("objectCoordsMain.txt");
+
+
 
