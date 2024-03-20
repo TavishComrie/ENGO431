@@ -2,6 +2,7 @@ clc
 clear
 close all
 
+%--------------------------------Validation--------------------------------
 % Format: 
 % (1) Point Number, 
 % (2) X-Coordinate (Image Space), (3) Y-Coordinate (Image Space), 
@@ -11,11 +12,13 @@ resectionImageAndObjectCoords = load("resectionImageAndObjectCoords.txt");
 validationImgCoords = resectionImageAndObjectCoords(:, 2:3);
 validationObjCoords = resectionImageAndObjectCoords(:, 4:6);
 
+
 % Format: 
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
 validationResectionEOPs = load("resectionEOPs.txt");
 
 
+%--------------------------------Main Data---------------------------------
 % Format: 
 % (1) Point Number, 
 % (2) X-Coordinate (Left Image), (3) Y-Coordinate (Left Image), 
@@ -32,4 +35,14 @@ rightImageCoords = [imageCoordsMain(:, 1), imageCoordsMain(:, 4:5)];
 objectCoordsMain = load("objectCoordsMain.txt");
 
 
+%--------------------------------Constants---------------------------------
+validationC = 152.15;   % in mm
+mainC = 153.358;        % in mm
 
+validationImgPointPrecision = 10E-5;    % in m
+mainImgPointPrecision = 4E-6;           % in m
+
+validationRMSE = 8;     % in mm
+mainRMSE = 4;           % in mm
+
+imgScale = 4900;
