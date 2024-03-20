@@ -1,43 +1,37 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data, weight)
+function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data, EOP, IOP, )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
-    xhat(7,1) = zeros;
+    xhat(size(data,1),1) = zeros;
     Apri = 1;
     CL = eye(size(data,1)*3);
     %initialize the Cl matrix with the precision
     CL = (weight^2) * CL;
     %Make the weight matrix for the adjustment
     P = inv(CL);
+    
+    
 
-       
-    %Straight level so omega,phi stay at 0
-    %determine all bearing differences for initial parmeters in the adjustment
-    objectbearing = atan2(data(1,5)-data(2,5),data(1,6)-data(2,6));
-    modelbearing = atan2(data(1,2)-data(2,2),data(1,3)-data(2,3));
-    objectdistance = sqrt((data(1,5)-data(2,5))^2+(data(1,6)-data(2,6))^2+(data(1,7)-data(2,7))^2);
-    modeldistance = sqrt((data(1,2)-data(2,2))^2+(data(1,3)-data(2,3))^2+(data(1,4)-data(2,4))^2);
-
-
-    %storeing initial paramters in the Xhat
-    xhat(3,1) = objectbearing - modelbearing;
-    xhat(7,1) = objectdistance / modeldistance;
-
-    %initialize vectors for R model and Image
-    robject = [data(1,5); data(1,6); data(1,7)];
-    rmodel = [data(1,2); data(1,3); data(1,4)];
-    %determine translation matrix
-    t0 = robject - xhat(7,1) * M_transformation_Matrix(xhat) * rmodel;
-
-    %store remaining parameters into Xhat
-    xhat(4,1) = t0(1,1);
-    xhat(5,1) = t0(2,1);
-    xhat(6,1) = t0(3,1);
     
     %initialize threhold
     threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
     
-    disp(xhat)
+   
+    
+    %Find approximate Values
+
+    xApprox(size(data,1),1) = zeros;
+    yApprox(size(data,1),1) = zeros;
+
+    for i = 1:size(data,1)
+       for j = 1:2
+            xApprox(i,j) = 0-
+
+
+
+
+       end
+    end
 
    
     counter = 0;
