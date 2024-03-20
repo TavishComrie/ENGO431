@@ -63,37 +63,44 @@ for i = 1:size(tieModelCoords,1)
     tieObjectCoords(i,:) = ModelTransformation(scale,M,t,tieModelCoords(i,:));
 end
 
-
+% Determining the persepctive center coordinates in object space (left
+% image)
 vectorPCLeftValidation = tValidation;
 VectorPCLeft = t;
 
+% Determining the persepctive center coordinates in object space (right
+% image)
 vectorPCRightValidation = scaleValidation * MValidation * baseVectorValidation + tValidation;
 VectorPCRight = scale * M * basevector + t;
 
+% Storing the pairs of perspective cetner coordinates into a vector
 vectorPCValidation = [vectorPCLeftValidation, vectorPCRightValidation];
 vectorPC = [VectorPCLeft, VectorPCRight];
 
-
+% Computing the object to image space rotation matrix for the validation 
 Moi_L_Validation = MimageL * transpose(MValidation);
 Moi_R_Validation = MimageR_Validation * transpose(MValidation);
 
+% Computing the object to image space rotation matrix
 Moi_L = MimageL * transpose(M);
 Moi_R = MimageR * transpose(M);
 
-
+% Extracting rotation angles for the left image (validation)
 w_L_Validation = atan2d(-Moi_L_Validation(3,2), Moi_L_Validation(3,3));
 phi_L_Validation = asind(Moi_L_Validation(3,1));
 kappa_L_Validation = atan2d(-Moi_L_Validation(2,1),Moi_L_Validation(1,1));
 
+% Extracting rotation angles for the right image (validation)
 w_R_Validation = atan2d(-Moi_R_Validation(3,2),Moi_R_Validation(3,3));
 phi_R_Validation = asind(Moi_R_Validation(3,1));
 kappa_R_Validation = atan2d(-Moi_R_Validation(2,1),Moi_R_Validation(1,1));
 
-
+% Extracting rotation angles for left image 
 w_L = atan2d(-Moi_L(3,2),Moi_L(3,3));
 phi_L = asind(Moi_L(3,1));
 kappa_L = atan2d(-Moi_L(2,1),Moi_L(1,1));
 
+% Extracting rotation angles for right image 
 w_R = atan2d(-Moi_R(3,2),Moi_R(3,3));
 phi_R = asind(Moi_R(3,1));
 kappa_R = atan2d(-Moi_R(2,1),Moi_R(1,1));
