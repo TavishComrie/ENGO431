@@ -28,7 +28,8 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performSinglePhotoResection(im
 
     angleThreshold = min(omegaphiThreshold,kappaThreshold);
 
-    threshold = [xyThreshold;xyThreshold;0.0001;angleThreshold;angleThreshold;angleThreshold];
+    %TODO!!!!!!!
+    threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold];
   
    
     counter = 0;
@@ -161,9 +162,9 @@ end
 function M = M_transformation_Matrix(Xnot)
     %M matrix developed for transforamtion
     %Xhat parameters extracted to be used 
-    w = Xnot(1,1);
-    phi = Xnot(2,1);
-    kappa = Xnot(3,1);
+    w = Xnot(4,1);
+    phi = Xnot(5,1);
+    kappa = Xnot(6,1);
     %initalize M matrix in radians
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
