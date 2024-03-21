@@ -1,6 +1,7 @@
 clc
 clear
 close all
+format long
 
 %--------------------------------Validation--------------------------------
 % Format: 
@@ -11,7 +12,10 @@ resectionImageAndObjectCoords = load("resectionImageAndObjectCoords.txt");
 
 validationImgCoords = resectionImageAndObjectCoords(:, 2:3);
 validationObjCoords = resectionImageAndObjectCoords(:, 4:6);
+validationControlNums = [30;40;50;112];
 
+validationImgCoords = [validationControlNums validationImgCoords];
+validationObjCoords = [validationControlNums validationObjCoords];
 
 % Format: 
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
@@ -42,7 +46,19 @@ mainC = 153.358;        % in mm
 validationImgPointPrecision = 10E-5;    % in m
 mainImgPointPrecision = 4E-6;           % in m
 
-validationRMSE = 8;     % in mm
-mainRMSE = 4;           % in mm
+validationRMSE = 0.015;     % in mm
+mainRMSE = 0.004;           % in mm
 
 imgScale = 4900;
+
+fidcornerMain = [106,106];
+rmaxMain = norm(fidcornerMain);
+
+%--------------------------------Running Adjustment---------------------------------
+
+disp("Right Resect")
+%[xhatLeft, residualsLeft,RxLeft,RValuesLeft] = performSinglePhotoResection(leftImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
+disp("Left Resect")
+%[xhatRight, residualsRight,RxRight,RValuesRight] = performSinglePhotoResection(rightImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
+disp("Val Resect")
+[xhatVal, residualsVal,RxVal,RValuesVal] = performSinglePhotoResection(validationImgCoords,validationObjCoords,validationRMSE,validationC,imgScale,rmaxMain);

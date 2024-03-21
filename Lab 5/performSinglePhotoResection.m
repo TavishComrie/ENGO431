@@ -1,9 +1,9 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performSinglePhotoResection(imageData,objectData,rmse,c,S,rmax)
+function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,objectData,rmse,c,S,rmax)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 6x1, Xc,Yc,Zc,omega,phi,kappa
     xhat(6,1) = zeros;
-    CL = (rmse^2)*eye(size(data,1)*3);
+    CL = (rmse^2)*eye(size(imageData,1)*2);
     %initialize the Cl matrix with the precision
     %Make the weight matrix for the adjustment
     P = inv(CL);
@@ -19,16 +19,20 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performSinglePhotoResection(im
     xhat(5,1) = 0;
     xhat(6,1) = atan2(b,a);
 
+    xhat
+
+    xhat = [6338.6;3984.6;1453.1;0;0;-18.854]
+
     %initialize threhold
 
 
-    xyThreshold = S * rmse / 10;
+    xyThreshold = S * rmse / 10 / 1000;
     omegaphiThreshold = rmse / (10*c);
     kappaThreshold = rmse / (10*rmax);
 
     angleThreshold = min(omegaphiThreshold,kappaThreshold);
 
-    threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold];
+    threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold]
   
    
     counter = 0;
@@ -41,13 +45,12 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performSinglePhotoResection(im
         M = M_transformation_Matrix(xhat);
         %Find M
 
-        [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c);
+        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c);
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
         %Find N and U
 
-        cond(N)
         %Find the condition on N
 
         delta = -1 * (inv(N) * u);
@@ -64,16 +67,11 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performSinglePhotoResection(im
     end
     %post adjustment procedure
     residuals = A * delta + w;
-    M = M_transformation_Matrix(xhat);
-    t = [xhat(4,1);xhat(5,1);xhat(6,1)];
-    scale = xhat(7,1);
-    w = createMisclosure(xhat,data,M);
-    A = findDesignMatrixA(data,xhat,M);
-    aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
+    aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6);
     %determine correlation and redundancy
     Cx = aPost * inv(N);
     Rx = corrcov(Cx);
-    R = eye(size(data,1)*3) - A * inv(A'*P*A) * A' * P;
+    R = eye(size(imageData,1)*2) - A * inv(A'*P*A) * A' * P;
     RValues = diag(R);
 end
 
@@ -91,7 +89,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
 
     phi = asin(M(3,1));
     k = atan2(-M(2,1),M(1,1));
-    w = atan2(-M(3,2),M(3,3));
+    omega = atan2(-M(3,2),M(3,3));
 
     for i = 1:p
         Xi = objectData(i,2);
@@ -114,21 +112,23 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         dyY = -c*(M(3,2)*V-M(2,2)*W)/(W*W);
         dyZ = -c*(M(3,3)*V-M(2,3)*W)/(W*W);
 
-        dxw = (-c/(W*W))*((Yi-Yc)*(U*M(3,3)-W*M(1,3))-(Z-Zc)*(U*M(3,2)-W*M(1,2)));
-        dxo = (-c/(W*W))*( ...
-            (Xi-Xc)*(-W*sin(phi)*cos(k)-U*cos(phi)) ...
-            +(Yi-Yc)*(W*sin(w)*cos(phi)*cos(k)-U*sin(w)*sin(phi)) ...
-            +(Zi-Zc)*(-W*cos(w)*cos(phi)*cos(k)+U*cos(w)*sin(phi))...
-            );
+        dxw = (-c/(W*W))*((Yi-Yc)*(U*M(3,3)-W*M(1,3))-(Zi-Zc)*(U*M(3,2)-W*M(1,2)));
         dxk = (-c*V)/W;
 
-        dyw = (-c/(W*W))*((Yi-Yc)*(V*M(3,3)-W*M(2,3))-(Z-Zc)*(V*M(3,2)-W*M(2,2)));
-        dyo = (-c/(W*W))*( ...
-            (Xi-Xc)*(W*sin(phi)*sin(k)-V*cos(phi)) ...
-            +(Yi-Yc)*(-W*sin(w)*cos(phi)*sin(k)-V*sin(w)*sin(phi)) ...
-            +(Zi-Zc)*(-W*cos(w)*cos(phi)*sin(k)+U*cos(w)*sin(phi))...
-        );
+        dyw = (-c/(W*W))*((Yi-Yc)*(V*M(3,3)-W*M(2,3))-(Zi-Zc)*(V*M(3,2)-W*M(2,2)));
         dyk = (-c*U)/W;
+
+        
+        xterm1 = (Xi-Xc)*(-1*W*sin(phi)*cos(k)-U*cos(phi));
+        xterm2 = (Yi-Yc)*(W*sin(omega)*cos(phi)*cos(k)-U*sin(omega)*sin(phi));
+        xterm3 = (Zi-Zc)*(-1*W*cos(omega)*cos(phi)*cos(k)+U*cos(omega)*sin(phi));
+
+        yterm1 = (Xi-Xc)*(W*sin(phi)*sin(k)-V*cos(phi));
+        yterm2 = (Yi-Yc)*(-1*W*sin(omega)*cos(phi)*sin(k)-V*sin(omega)*sin(phi));
+        yterm3 = (Zi-Zc)*(W*cos(omega)*cos(phi)*sin(k)+V*cos(omega)*sin(phi));
+
+        dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
+        dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
 
 
         A(2*i-1,1)=dxX;
@@ -155,6 +155,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         w(2*i,1)=wy;
 
     end
+    w
 end
 
 
