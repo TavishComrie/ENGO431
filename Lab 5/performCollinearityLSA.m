@@ -29,8 +29,8 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     xVal28 = data28(:,1);
     yVal28 = data28(:,2);
     
-    xVals27 = data27(:,1);
-    yVals28 = data28(:,2);
+    xVal27 = data27(:,1);
+    yVal27 = data27(:,2);
 
 
     M27 = M_transformation_Matrix(EOPAngles(:,1))
