@@ -42,7 +42,6 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
    
     xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
     xhat
-
    
     counter = 0;
 
@@ -76,18 +75,16 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
         counter = counter + 1;
     end
     %post adjustment procedure
+    %post adjustment procedure
     residuals = A * delta + w;
-    M = M_transformation_Matrix(xhat);
-    t = [xhat(4,1);xhat(5,1);xhat(6,1)];
-    scale = xhat(7,1);
-    w = createMisclosure(xhat,data,M);
-    A = findDesignMatrixA(data,xhat,M);
-    aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
+    aPost = transpose(residuals) *P* residuals / (1)
     %determine correlation and redundancy
-    Cx = aPost * inv(N);
-    Rx = corrcov(Cx);
-    R = eye(size(data,1)*3) - A * inv(A'*P*A) * A' * P;
+    Cx = inv(N);
+    Rx = corrcov(Cx); %TODO
+    R = eye(4) - A * inv(A'*P*A) * A' * P;
     RValues = diag(R);
+
+    XhatSd = sqrt(diag(Cx));
 end
 
 
@@ -130,17 +127,17 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     A(1,2) = c*(ML(3,2)*Ul-ML(1,2)*Wl)/(Wl*Wl);
     A(1,3) = c*(ML(3,3)*Ul-ML(1,3)*Wl)/(Wl*Wl);
 
-    A(2,1) = c*(ML(3,1)*Vl-ML(1,1)*Wl)/(Wl*Wl);
-    A(2,2) = c*(ML(3,2)*Vl-ML(1,2)*Wl)/(Wl*Wl);
-    A(2,3) = c*(ML(3,3)*Vl-ML(1,3)*Wl)/(Wl*Wl);
+    A(2,1) = c*(ML(3,1)*Vl-ML(2,1)*Wl)/(Wl*Wl);
+    A(2,2) = c*(ML(3,2)*Vl-ML(2,2)*Wl)/(Wl*Wl);
+    A(2,3) = c*(ML(3,3)*Vl-ML(2,3)*Wl)/(Wl*Wl);
 
     A(3,1) = c*(MR(3,1)*Ur-MR(1,1)*Wr)/(Wr*Wr);
     A(3,2) = c*(MR(3,2)*Ur-MR(1,2)*Wr)/(Wr*Wr);
     A(3,3) = c*(MR(3,3)*Ur-MR(1,3)*Wr)/(Wr*Wr);
 
-    A(4,1) = c*(MR(3,1)*Vr-MR(1,1)*Wr)/(Wr*Wr);
-    A(4,2) = c*(MR(3,2)*Vr-MR(1,2)*Wr)/(Wr*Wr);
-    A(4,3) = c*(MR(3,3)*Vr-MR(1,3)*Wr)/(Wr*Wr);
+    A(4,1) = c*(MR(3,1)*Vr-MR(2,1)*Wr)/(Wr*Wr);
+    A(4,2) = c*(MR(3,2)*Vr-MR(2,2)*Wr)/(Wr*Wr);
+    A(4,3) = c*(MR(3,3)*Vr-MR(2,3)*Wr)/(Wr*Wr);
 
 
     fxL = -c*Ul/Wl;

@@ -20,6 +20,7 @@ dataleft = intersectionImageCoords(:,2:3);
 dataright = intersectionImageCoords(:,4:5);
 
 for i = size(intersectionImageCoords,1)
+    disp("Validation Adjustment Beginning!")
     performCollinearityLSA(c,dataright(i,:), EOP,dataleft(i,:))
 end
 
