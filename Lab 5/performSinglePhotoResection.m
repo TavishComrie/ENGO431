@@ -128,7 +128,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         yterm3 = (Zi-Zc)*(W*cos(omega)*cos(phi)*sin(k)+V*cos(omega)*sin(phi));
 
         dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
-        dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
+        dyo = (c/(W*W)) * (yterm1+yterm2+yterm3);
 
 
         A(2*i-1,1)=dxX;
