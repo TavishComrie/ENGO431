@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data28, EOP, data27 )
+function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
@@ -78,19 +78,6 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
 
         counter = counter + 1;
     end
-    %post adjustment procedure
-    residuals = A * delta + w;
-    M = M_transformation_Matrix(xhat);
-    t = [xhat(4,1);xhat(5,1);xhat(6,1)];
-    scale = xhat(7,1);
-    w = createMisclosure(xhat,data,M);
-    A = findDesignMatrixA(data,xhat,M);
-    aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
-    %determine correlation and redundancy
-    Cx = aPost * inv(N);
-    Rx = corrcov(Cx);
-    R = eye(size(data,1)*3) - A * inv(A'*P*A) * A' * P;
-    RValues = diag(R);
 end
 
 
