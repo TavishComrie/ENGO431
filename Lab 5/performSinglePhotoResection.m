@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,objectData,rmse,c,S,rmax)
+function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(imageData,objectData,rmse,c,S,rmax)
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 6x1, Xc,Yc,Zc,omega,phi,kappa
@@ -14,14 +14,14 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
 
     xhat(1,1) = dx;
     xhat(2,1) = dy;
-    xhat(3,1) = c/1000*sqrt(a*a+b*b)+Zave;
+    xhat(3,1) = (c)*sqrt(a*a+b*b)+Zave;
     xhat(4,1) = 0;
     xhat(5,1) = 0;
     xhat(6,1) = atan2(b,a);
 
     xhat
 
-    xhat = [6338.6;3984.6;1453.1;0;0;-18.854*pi/180]
+    %xhat = [6338.6;3984.6;1453.1;0;0;-18.854*pi/180]
 
     %initialize threhold
 
@@ -67,12 +67,14 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
     end
     %post adjustment procedure
     residuals = A * delta + w;
-    aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6);
+    aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6)
     %determine correlation and redundancy
-    Cx = aPost * inv(N);
-    Rx = corrcov(Cx);
+    Cx = inv(N);
+    Rx = corrcov(Cx); %TODO
     R = eye(size(imageData,1)*2) - A * inv(A'*P*A) * A' * P;
     RValues = diag(R);
+
+    XhatSd = sqrt(diag(Cx));
 end
 
 function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c) 
@@ -116,7 +118,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         dxk = (-c*V)/W;
 
         dyw = (-c/(W*W))*((Yi-Yc)*(V*M(3,3)-W*M(2,3))-(Zi-Zc)*(V*M(3,2)-W*M(2,2)));
-        dyk = (-c*U)/W;
+        dyk = (c*U)/W;
 
         
         xterm1 = (Xi-Xc)*(-1*W*sin(phi)*cos(k)-U*cos(phi));
@@ -128,7 +130,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         yterm3 = (Zi-Zc)*(W*cos(omega)*cos(phi)*sin(k)+V*cos(omega)*sin(phi));
 
         dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
-        dyo = (c/(W*W)) * (yterm1+yterm2+yterm3);
+        dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
 
 
         A(2*i-1,1)=dxX;

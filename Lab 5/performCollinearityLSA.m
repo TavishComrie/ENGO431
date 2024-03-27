@@ -92,89 +92,87 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     RValues = diag(R);
 end
 
-function A = findDesignMatrixA(data, xo, Mmatrix) 
+
+function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP) 
 %development of the A matrix
-    A(size(data,1)*4,3*size(data,1)) = zeros;
-    for i = 1:size(data,1)
-        %initalize model space coords
-        Xm = data(i,2);
-        Ym = data(i,3);
-        Zm = data(i,4);
- 
+    n = 4;
 
-        %extract unknown parameters and store
-        omega = xo(1, 1);
-        phi = xo(2, 1);
-        kappa = xo(3,1);
-        tx = xo(4,1);
-        ty = xo(5,1);
-        yz = xo(6,1);
-        scale = xo(7,1);
+    A(4,3) = zeros;
+    w(4,1) = zeros;
 
-        %derivative X
-        deltaomegax = ((Ym * scale) * ((-sin(omega) * sin(kappa)) + (cos(omega) * sin(phi) * cos(kappa)))) + ((scale*Zm) * ((cos(omega) * sin(kappa)) + sin(omega) * sin(phi) * cos(kappa)));
-        deltaphix = (-scale * Xm * sin(phi) * cos(kappa)) + (scale * Ym * sin(omega) * cos(phi) * cos(kappa))- (scale * Zm *cos(omega) * cos(phi) * cos(kappa));
-        deltakx = (-scale * Xm * cos(phi) * sin(kappa) ) + ((scale * Ym ) * (cos(omega)*cos(kappa) - sin(omega) * sin(phi) * sin(kappa))) + ((scale * Zm) * (sin(omega)*cos(kappa) + cos(omega)*sin(phi)*sin(kappa)));
-        deltatxx = 1;
-        deltatyx = 0;
-        deltatzx = 0;
-        deltascalex = Xm * Mmatrix(1,1) + Ym * Mmatrix(1,2) + Zm * Mmatrix(1,3);
+    Xcl = EOP(1,1);
+    Ycl = EOP(2,1);
+    Zcl = EOP(3,1);
 
-        %derivates Y
-        deltaomegay = ((Ym * scale) * (-sin(omega) * cos(kappa) - cos(omega) * sin(phi) * sin(kappa))) + ((scale*Zm) * (cos(omega) * cos(kappa) - sin(omega) * sin(phi) * sin(kappa)));
-        deltaphiy = scale * Xm * sin(phi) * sin(kappa) - scale * Ym * sin(omega) * cos(phi) * sin(kappa) + scale * Zm *cos(omega) * cos(phi) * sin(kappa);
-        deltaky = (-scale * Xm * cos(phi) * cos(kappa)) + ((scale * Ym ) * (-cos(omega)*sin(kappa) - sin(omega) * sin(phi) * cos(kappa))) + ((scale * Zm) * (-sin(omega)*sin(kappa) + cos(omega)*sin(phi)*cos(kappa)));
-        deltatxy = 0;
-        deltatyy = 1;
-        deltatzy = 0;
-        deltascaley = Xm * Mmatrix(2,1) + Ym * Mmatrix(2,2) + Zm * Mmatrix(2,3);
+    Xcr = EOP(1,2); 
+    Ycr = EOP(2,2);
+    Zcr = EOP(3,2);
 
 
-        %derivates Z
-        deltaomegaz = -scale * Ym * cos(omega) * cos(phi) - scale * Zm * sin(omega) * cos(phi);
-        deltaphiz = scale * Xm * cos(phi) + scale * Ym * sin(omega) * sin(phi) - scale * Zm *cos(omega) * sin(phi);
-        deltakz = 0;
-        deltatxz = 0;
-        deltatyz = 0;
-        deltatzz = 1;
-        deltascalez = Xm * Mmatrix(3,1) + Ym * Mmatrix(3,2) + Zm * Mmatrix(3,3);
-  
-    %Store all deriviates into A matrix to return A
-        A(3*i-2, :) = [deltaomegax, deltaphix, deltakx, deltatxx, deltatyx, deltatzx, deltascalex];
-        A(3*i-1, :) = [deltaomegay, deltaphiy, deltaky, deltatxy, deltatyy, deltatzy, deltascaley];
-        A(3*i, :) = [deltaomegaz, deltaphiz, deltakz, deltatxz, deltatyz, deltatzz, deltascalez];
+    Xi = xhat(1,1); 
+    Yi = xhat(2,1);
+    Zi = xhat(3,1);
 
-    end      
-end
+    xiL = imageData(1,2);
+    yiL = imageData(1,3);
+
+    xiR = imageData(1,4);
+    yiR = imageData(1,5);
 
 
-function w = createMisclosure(x0,data,M)
-    %Determine misclosure
-    points = size(data,1);
-    w(points*3,1)=zeros;
-    for i = 1:points 
-        %loop to find point misclosure using model, object, translation and
-        %scale paramters
-        robject = [data(i,5);data(i,6);data(i,7)];
-        rmodel = [data(i,2);data(i,3);data(i,4)];
-        t = [x0(4,1);x0(5,1);x0(6,1)];
-        scale = x0(7,1);
-        %point misclosure equation
-        pointmisclosure = scale * M * rmodel + t - robject;
-        %store and return misclosure values 
-        w(3*i-2,1) = pointmisclosure(1,1);
-        w(3*i-1,1) = pointmisclosure(2,1);
-        w(3*i,1) = pointmisclosure(3,1);
+    Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
+    Vl = ML(2,1)*(Xi-Xcl)+ML(2,2)*(Yi-Ycl)+ML(2,3)*(Zi-Zcl);
+    Wl = ML(3,1)*(Xi-Xcl)+ML(3,2)*(Yi-Ycl)+ML(3,3)*(Zi-Zcl);
+
+    Ur = MR(1,1)*(Xi-Xcr)+MR(1,2)*(Yi-Ycr)+MR(1,3)*(Zi-Zcr);
+    Vr = MR(2,1)*(Xi-Xcr)+MR(2,2)*(Yi-Ycr)+MR(2,3)*(Zi-Zcr);
+    Wr = MR(3,1)*(Xi-Xcr)+MR(3,2)*(Yi-Ycr)+MR(3,3)*(Zi-Zcr);
+
+        A(1,1) = c*(ML(3,1)*U-M(1,1)*W)/(W*W);
+        A(1,2) = c*(M1(3,2)*U-M(1,2)*W)/(W*W);
+        A(1,3) = c*(M1(3,3)*U-M(1,3)*W)/(W*W);
+
+        dyX = c*(M(3,1)*V-M(2,1)*W)/(W*W);
+        dyY = c*(M(3,2)*V-M(2,2)*W)/(W*W);
+        dyZ = c*(M(3,3)*V-M(2,3)*W)/(W*W);
+
+
+        A(2*i-1,1)=dxX;
+        A(2*i-1,2)=dxY;
+        A(2*i-1,3)=dxZ;
+
+        A(2*i,1)=dyX;
+        A(2*i,2)=dyY;
+        A(2*i,3)=dyZ;
+
+    fxL = -c*Ul/Wl;
+    fyL = -c*Vl/Wl;   
+
+    fxR = -c*Ur/Wr;
+    fyR = -c*Vr/Wr;
+
+    wxL = fxL - xiL;
+    wyL = fyL - yiL;
+
+    wxR = fxR - xiR;
+    wyR = fyR - yiR;
+
+    w(1, 1)=wxL;
+    w(2, 2)=wyL;
+    w(3, 1)=wxR;
+    w(4, 1)=wyR;
+
     end
+    w
 end
 
 
-function M = M_transformation_Matrix(Xnot)
+function M = M_transformation_Matrix(EOP)
     %M matrix developed for transforamtion
     %Xhat parameters extracted to be used 
-    w = Xnot(1,1);
-    phi = Xnot(2,1);
-    kappa = Xnot(3,1);
+    w = EOP(4,1);
+    phi = EOP(5,1);
+    kappa = EOP(6,1);
     %initalize M matrix in radians
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);

@@ -56,9 +56,12 @@ rmaxMain = norm(fidcornerMain);
 
 %--------------------------------Running Adjustment---------------------------------
 
-disp("Right Resect")
-%[xhatLeft, residualsLeft,RxLeft,RValuesLeft] = performSinglePhotoResection(leftImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
 disp("Left Resect")
-%[xhatRight, residualsRight,RxRight,RValuesRight] = performSinglePhotoResection(rightImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
+[xhatLeft, residualsLeft,RxLeft,RValuesLeft,xhatLeftSd] = performSinglePhotoResection(leftImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
+disp("Right Resect")
+[xhatRight, residualsRight,RxRight,RValuesRight,xhatRightSd] = performSinglePhotoResection(rightImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
 disp("Val Resect")
-[xhatVal, residualsVal,RxVal,RValuesVal] = performSinglePhotoResection(validationImgCoords,validationObjCoords,validationRMSE,validationC,7800,rmaxMain);
+[xhatVal, residualsVal,RxVal,RValuesVal,xhatValSd] = performSinglePhotoResection(validationImgCoords,validationObjCoords,validationRMSE,validationC,7800,rmaxMain);
+
+toOutput = [xhatLeft,xhatRight];
+writematrix(toOutput,"EOPsForIntersectionMainTESTINGONLY.txt")
