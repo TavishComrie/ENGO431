@@ -45,7 +45,6 @@ function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
     xhat = [6869.168,3844.536,283.202];
     xhat = transpose(xhat);
     xhat
-
    
     counter = 0;
 
@@ -120,17 +119,17 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     A(1,2) = c*(ML(3,2)*Ul-ML(1,2)*Wl)/(Wl*Wl);
     A(1,3) = c*(ML(3,3)*Ul-ML(1,3)*Wl)/(Wl*Wl);
 
-    A(2,1) = c*(ML(3,1)*Vl-ML(1,1)*Wl)/(Wl*Wl);
-    A(2,2) = c*(ML(3,2)*Vl-ML(1,2)*Wl)/(Wl*Wl);
-    A(2,3) = c*(ML(3,3)*Vl-ML(1,3)*Wl)/(Wl*Wl);
+    A(2,1) = c*(ML(3,1)*Vl-ML(2,1)*Wl)/(Wl*Wl);
+    A(2,2) = c*(ML(3,2)*Vl-ML(2,2)*Wl)/(Wl*Wl);
+    A(2,3) = c*(ML(3,3)*Vl-ML(2,3)*Wl)/(Wl*Wl);
 
     A(3,1) = c*(MR(3,1)*Ur-MR(1,1)*Wr)/(Wr*Wr);
     A(3,2) = c*(MR(3,2)*Ur-MR(1,2)*Wr)/(Wr*Wr);
     A(3,3) = c*(MR(3,3)*Ur-MR(1,3)*Wr)/(Wr*Wr);
 
-    A(4,1) = c*(MR(3,1)*Vr-MR(1,1)*Wr)/(Wr*Wr);
-    A(4,2) = c*(MR(3,2)*Vr-MR(1,2)*Wr)/(Wr*Wr);
-    A(4,3) = c*(MR(3,3)*Vr-MR(1,3)*Wr)/(Wr*Wr);
+    A(4,1) = c*(MR(3,1)*Vr-MR(2,1)*Wr)/(Wr*Wr);
+    A(4,2) = c*(MR(3,2)*Vr-MR(2,2)*Wr)/(Wr*Wr);
+    A(4,3) = c*(MR(3,3)*Vr-MR(2,3)*Wr)/(Wr*Wr);
 
 
     fxL = -c*Ul/Wl;

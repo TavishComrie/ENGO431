@@ -26,6 +26,7 @@ xhat(size(ImageCoords,1),3) = zeros;
 
 
 for i = size(intersectionImageCoords,1)
+    
     [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(cVal,dataright(i,:), EOP,dataleft(i,:));
     xhat(i,:) = xhat;
 end
