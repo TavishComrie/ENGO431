@@ -148,14 +148,22 @@ function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP)
         A(2*i,2)=dyY;
         A(2*i,3)=dyZ;
 
-        fx = -c*U/W;
-        fy = -c*V/W;   
+    fxL = -c*Ul/Wl;
+    fyL = -c*Vl/Wl;   
 
-        wx = fx - xi;
-        wy = fy - yi;
+    fxR = -c*Ur/Wr;
+    fyR = -c*Vr/Wr;
 
-        w(2*i-1,1)=wx;
-        w(2*i,1)=wy;
+    wxL = fxL - xiL;
+    wyL = fyL - yiL;
+
+    wxR = fxR - xiR;
+    wyR = fyR - yiR;
+
+    w(1, 1)=wxL;
+    w(2, 2)=wyL;
+    w(3, 1)=wxR;
+    w(4, 1)=wyR;
 
     end
     w
