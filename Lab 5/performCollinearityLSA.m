@@ -96,75 +96,57 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
 end
 
 
-function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c) 
+function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP) 
 %development of the A matrix
-    p = size(imageData,1);
-    n = 2*p;
+    n = 4;
 
-    A(n,6) = zeros;
-    w(n,1) = zeros;
+    A(4,3) = zeros;
+    w(4,1) = zeros;
 
-    Xc = x(1,1);
-    Yc = x(2,1);
-    Zc = x(3,1);
+    Xcl = EOP(1,1);
+    Ycl = EOP(2,1);
+    Zcl = EOP(3,1);
 
-    phi = asin(M(3,1));
-    k = atan2(-M(2,1),M(1,1));
-    omega = atan2(-M(3,2),M(3,3));
-
-    for i = 1:p
-        Xi = objectData(i,2);
-        Yi = objectData(i,3);
-        Zi = objectData(i,4);
-
-        xi = imageData(i,2);
-        yi = imageData(i,3);
+    Xcr = EOP(1,2); 
+    Ycr = EOP(2,2);
+    Zcr = EOP(3,2);
 
 
-        U = M(1,1)*(Xi-Xc)+M(1,2)*(Yi-Yc)+M(1,3)*(Zi-Zc);
-        V = M(2,1)*(Xi-Xc)+M(2,2)*(Yi-Yc)+M(2,3)*(Zi-Zc);
-        W = M(3,1)*(Xi-Xc)+M(3,2)*(Yi-Yc)+M(3,3)*(Zi-Zc);
+    Xi = xhat(1,1); 
+    Yi = xhat(2,1);
+    Zi = xhat(3,1);
 
-        dxX = -c*(M(3,1)*U-M(1,1)*W)/(W*W);
-        dxY = -c*(M(3,2)*U-M(1,2)*W)/(W*W);
-        dxZ = -c*(M(3,3)*U-M(1,3)*W)/(W*W);
+    xiL = imageData(1,2);
+    yiL = imageData(1,3);
 
-        dyX = -c*(M(3,1)*V-M(2,1)*W)/(W*W);
-        dyY = -c*(M(3,2)*V-M(2,2)*W)/(W*W);
-        dyZ = -c*(M(3,3)*V-M(2,3)*W)/(W*W);
+    xiR = imageData(1,4);
+    yiR = imageData(1,5);
 
-        dxw = (-c/(W*W))*((Yi-Yc)*(U*M(3,3)-W*M(1,3))-(Zi-Zc)*(U*M(3,2)-W*M(1,2)));
-        dxk = (-c*V)/W;
 
-        dyw = (-c/(W*W))*((Yi-Yc)*(V*M(3,3)-W*M(2,3))-(Zi-Zc)*(V*M(3,2)-W*M(2,2)));
-        dyk = (c*U)/W;
+    Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
+    Vl = ML(2,1)*(Xi-Xcl)+ML(2,2)*(Yi-Ycl)+ML(2,3)*(Zi-Zcl);
+    Wl = ML(3,1)*(Xi-Xcl)+ML(3,2)*(Yi-Ycl)+ML(3,3)*(Zi-Zcl);
 
-        
-        xterm1 = (Xi-Xc)*(-1*W*sin(phi)*cos(k)-U*cos(phi));
-        xterm2 = (Yi-Yc)*(W*sin(omega)*cos(phi)*cos(k)-U*sin(omega)*sin(phi));
-        xterm3 = (Zi-Zc)*(-1*W*cos(omega)*cos(phi)*cos(k)+U*cos(omega)*sin(phi));
+    Ur = MR(1,1)*(Xi-Xcr)+MR(1,2)*(Yi-Ycr)+MR(1,3)*(Zi-Zcr);
+    Vr = MR(2,1)*(Xi-Xcr)+MR(2,2)*(Yi-Ycr)+MR(2,3)*(Zi-Zcr);
+    Wr = MR(3,1)*(Xi-Xcr)+MR(3,2)*(Yi-Ycr)+MR(3,3)*(Zi-Zcr);
 
-        yterm1 = (Xi-Xc)*(W*sin(phi)*sin(k)-V*cos(phi));
-        yterm2 = (Yi-Yc)*(-1*W*sin(omega)*cos(phi)*sin(k)-V*sin(omega)*sin(phi));
-        yterm3 = (Zi-Zc)*(W*cos(omega)*cos(phi)*sin(k)+V*cos(omega)*sin(phi));
+        A(1,1) = c*(ML(3,1)*U-M(1,1)*W)/(W*W);
+        A(1,2) = c*(M1(3,2)*U-M(1,2)*W)/(W*W);
+        A(1,3) = c*(M1(3,3)*U-M(1,3)*W)/(W*W);
 
-        dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
-        dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
+        dyX = c*(M(3,1)*V-M(2,1)*W)/(W*W);
+        dyY = c*(M(3,2)*V-M(2,2)*W)/(W*W);
+        dyZ = c*(M(3,3)*V-M(2,3)*W)/(W*W);
 
 
         A(2*i-1,1)=dxX;
         A(2*i-1,2)=dxY;
         A(2*i-1,3)=dxZ;
-        A(2*i-1,4)=dxw;
-        A(2*i-1,5)=dxo;
-        A(2*i-1,6)=dxk;
 
         A(2*i,1)=dyX;
         A(2*i,2)=dyY;
         A(2*i,3)=dyZ;
-        A(2*i,4)=dyw;
-        A(2*i,5)=dyo;
-        A(2*i,6)=dyk;
 
         fx = -c*U/W;
         fy = -c*V/W;   
