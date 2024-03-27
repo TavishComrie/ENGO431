@@ -18,7 +18,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     Yc = EOP(2,:);
     Zc = EOP(3,:);
 
-    EOPAngles = EOP(4:6,:)*pi/180;
+    EOPAngles = EOP(4:6,:);
   
     %initialize threhold
     threshold = [0.0001;0.0001;0.0001];
@@ -137,7 +137,7 @@ function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP)
         dyZ = c*(M(3,3)*V-M(2,3)*W)/(W*W);
 
 
-        A(2*i-1,1)=dxX;
+        A(2*ig-1,1)=dxX;
         A(2*i-1,2)=dxY;
         A(2*i-1,3)=dxZ;
 
