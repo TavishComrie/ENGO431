@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28, EOP, IOP, data27 )
+function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data28, EOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
@@ -9,7 +9,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
     %Precision of the x,y coords in image space
     %is taken from Lab 2 report as RMS the values
     precImg = 0.004;
-
+    
     CL = (1/precImg) * CL;
     %Make the weight matrix for the adjustment
     P = inv(CL);
@@ -18,29 +18,26 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
     Yc = EOP(2,:);
     Zc = EOP(3,:);
 
-    EOPAngles = EOP(4:6,:);
-
-    
+    EOPAngles = EOP(4:6,:)*pi/180;
+  
     %initialize threhold
-    threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
+    threshold = [0.0001;0.0001;0.0001];
     
-    xo(size(data28,1),1) = zeros;
-    yo(size(data28,1),1) = zeros;
-    
+
     %Find approximate Values
 
-    xVals28 = data28(:,1);
-    yVals28 = data28(:,2);
+    xVal28 = data28(:,1);
+    yVal28 = data28(:,2);
     
-    xVals27 = data27(:,1);
-    yVals28 = data28(:,1);
+    xVal27 = data27(:,1);
+    yVal27 = data27(:,1);
 
-    for i = 1:size(data28,1)
-        for j = 1:2
-            x(
 
-        end
-    end
+    M27 = M_transformation_Matrix(EOPAngles(:,1))
+    M28 = M_transformation_Matrix(EOPAngles(:,2))
+
+    A = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
+    b = make_b(c,M27,M28,xVal27,yVal27,xVal28,yVal28,Xc,Yc,Zc);
     
 
    
@@ -183,3 +180,47 @@ function M = M_transformation_Matrix(Xnot)
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
 end
+
+function weirdA = make_weirdA(c,mL,mR,xL,yL,xR,yR)
+
+
+        weirdA(1,1) = (xL(1)*mL(3,1))+(c*mL(1,1));
+        weirdA(1,2) = (xL(1)*mL(3,2))+(c*mL(1,2));
+        weirdA(1,3) = (xL(1)*mL(3,3))+(c*mL(1,3));
+
+        weirdA(2,1) = (yL(1)*mL(3,1))+(c*mL(2,1));
+        weirdA(2,2) = (yL(1)*mL(3,2))+(c*mL(2,2));
+        weirdA(2,3) = (yL(1)*mL(3,3))+(c*mL(2,3));
+
+        weirdA(3,1) = (xR(1)*mR(3,1))+(c*mR(1,1));
+        weirdA(3,2) = (xR(1)*mR(3,2))+(c*mR(1,2));
+        weirdA(3,3) = (xR(1)*mR(3,3))+(c*mR(1,3));
+
+        weirdA(4,1) = (yR(1)*mR(3,1))+(c*mR(2,1));
+        weirdA(4,2) = (yR(1)*mR(3,2))+(c*mR(2,2));
+        weirdA(4,3) = (yR(1)*mR(3,3))+(c*mR(2,3));
+   
+end
+
+function b = make_b(c,mL,mR,xL,yL,xR,yR,Xc,Yc,Zc)
+        b(4,1) = zeros;
+
+         b(1,1) = (xL(1)*mL(3,1)+(c*mL(1,1)))*Xc(1,1)...
+         + (xL(1)*mL(3,2)+(c*mL(1,2)))*Yc(1,1)...
+         + (xL(1)*mL(3,3))+(c*mL(1,3))*Zc(1,1);
+
+         b(2,1) = (yL(1)*mL(3,1)+(c*mL(2,1))) *Xc(1,1)...
+         + (yL(1)*mL(3,2)+(c*mL(2,2)))*Yc(1,1)...
+         + (yL(1)*mL(3,3))+(c*mL(2,3))*Zc(1,1);
+
+         b(3,1) = (xR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
+         + (xR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
+         + (xR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+
+         b(4,1) = (yR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
+         + (yR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
+         + (yR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+end
+
+
+
