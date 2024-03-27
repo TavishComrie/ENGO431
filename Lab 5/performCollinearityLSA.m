@@ -1,37 +1,47 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data, EOP, IOP, )
+function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28, EOP, IOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
-    xhat(size(data,1),1) = zeros;
-    Apri = 1;
-    CL = eye(size(data,1)*3);
+    xhat(3,1) = zeros;
+    CL = eye(4,4);
     %initialize the Cl matrix with the precision
-    CL = (weight^2) * CL;
+
+    %Precision of the x,y coords in image space
+    %is taken from Lab 2 report as RMS the values
+    precImg = 0.004;
+
+    CL = (1/precImg) * CL;
     %Make the weight matrix for the adjustment
     P = inv(CL);
     
-    
+    Xc = EOP(1,:);
+    Yc = EOP(2,:);
+    Zc = EOP(3,:);
+
+    EOPAngles = EOP(4:6,:);
 
     
     %initialize threhold
     threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
     
-   
+    xo(size(data28,1),1) = zeros;
+    yo(size(data28,1),1) = zeros;
     
     %Find approximate Values
 
-    xApprox(size(data,1),1) = zeros;
-    yApprox(size(data,1),1) = zeros;
+    xVals28 = data28(:,1);
+    yVals28 = data28(:,2);
+    
+    xVals27 = data27(:,1);
+    yVals28 = data28(:,1);
 
-    for i = 1:size(data,1)
-       for j = 1:2
-            xApprox(i,j) = 0-
+    for i = 1:size(data28,1)
+        for j = 1:2
+            x(
 
-
-
-
-       end
+        end
     end
+    
 
    
     counter = 0;
@@ -40,8 +50,9 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data, E
     %all LSA parameters
     notConverged = true;
     while notConverged
-        %Find A
-        M = M_transformation_Matrix(xhat)
+        
+        M27 = M_transformation_Matrix(EOPAngles(:,1))
+        M28 = M_transformation_Matrix(EOPAngles(:,2))
         %Find M
 
         A = findDesignMatrixA(data, xhat, M)
