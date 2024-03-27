@@ -1,8 +1,7 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data28, EOP, data27 )
+function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
-    xhat(3,1) = zeros;
     CL = eye(4,4);
     %initialize the Cl matrix with the precision
 
@@ -17,6 +16,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     Xc = EOP(1,:);
     Yc = EOP(2,:);
     Zc = EOP(3,:);
+  
 
     EOPAngles = EOP(4:6,:);
   
@@ -33,40 +33,40 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     yVal27 = data27(:,2);
 
 
-    M27 = M_transformation_Matrix(EOPAngles(:,1))
-    M28 = M_transformation_Matrix(EOPAngles(:,2))
+    M27 = M_transformation_Matrix(EOPAngles(:,1));
+    M28 = M_transformation_Matrix(EOPAngles(:,2));
 
-    A = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
+    weirdA = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
     b = make_b(c,M27,M28,xVal27,yVal27,xVal28,yVal28,Xc,Yc,Zc);
-    
-    Xnot = inverse((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
-
-
+   
+   
+    xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
+    xhat = [6869.168,3844.536,283.202];
+    xhat = transpose(xhat);
    
     counter = 0;
 
     %Run least squares adjustment with defined paramters and functions for
     %all LSA parameters
     notConverged = true;
-    while notConverged
+    while counter<5
         
-        M27 = M_transformation_Matrix(EOPAngles(:,1))
-        M28 = M_transformation_Matrix(EOPAngles(:,2))
+       
         %Find M
 
-        [A,w] = findDesignMatrixAandW(xo,data27,data28,M27,M28,c,EOP) 
+        [A,w] = findDesignMatrixAandW(xhat,data27,data28,M27,M28,c,EOP); 
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
         %Find N and U
 
-        cond(N)
+        cond(N);
         %Find the condition on N
 
         delta = -1 * (inv(N) * u);
         %Find Delta (corrections for unknowns)
 
-        xhat = xhat + delta
+        xhat = xhat + delta;
         %Find Xhat (Corrected unknown parameters)
 
         %Check for convergence against vector of thresholds
@@ -75,19 +75,6 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
 
         counter = counter + 1;
     end
-    %post adjustment procedure
-    residuals = A * delta + w;
-    M = M_transformation_Matrix(xhat);
-    t = [xhat(4,1);xhat(5,1);xhat(6,1)];
-    scale = xhat(7,1);
-    w = createMisclosure(xhat,data,M);
-    A = findDesignMatrixA(data,xhat,M);
-    aPost = transpose(residuals) *P* residuals / (size(data,1)*3-7);
-    %determine correlation and redundancy
-    Cx = aPost * inv(N);
-    Rx = corrcov(Cx);
-    R = eye(size(data,1)*3) - A * inv(A'*P*A) * A' * P;
-    RValues = diag(R);
 end
 
 
@@ -111,11 +98,11 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     Yi = xhat(2,1);
     Zi = xhat(3,1);
 
-    xiL = dataL(1,2);
-    yiL = dataL(1,3);
+    xiL = dataL(1,1);
+    yiL = dataL(1,2);
 
-    xiR = dataR(1,4);
-    yiR = dataR(1,5);
+    xiR = dataR(1,1);
+    yiR = dataR(1,2);
 
 
     Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
@@ -130,17 +117,17 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     A(1,2) = c*(ML(3,2)*Ul-ML(1,2)*Wl)/(Wl*Wl);
     A(1,3) = c*(ML(3,3)*Ul-ML(1,3)*Wl)/(Wl*Wl);
 
-    A(2,1) = c*(ML(3,1)*Vl-ML(1,1)*Wl)/(Wl*Wl);
-    A(2,2) = c*(ML(3,2)*Vl-ML(1,2)*Wl)/(Wl*Wl);
-    A(2,3) = c*(ML(3,3)*Vl-ML(1,3)*Wl)/(Wl*Wl);
+    A(2,1) = c*(ML(3,1)*Vl-ML(2,1)*Wl)/(Wl*Wl);
+    A(2,2) = c*(ML(3,2)*Vl-ML(2,2)*Wl)/(Wl*Wl);
+    A(2,3) = c*(ML(3,3)*Vl-ML(2,3)*Wl)/(Wl*Wl);
 
-    A(3,1) = c*(MR(3,1)*UR-MR(1,1)*Wr)/(Wr*Wr);
-    A(3,2) = c*(MR(3,2)*UR-MR(1,2)*Wr)/(Wr*Wr);
-    A(3,3) = c*(MR(3,3)*UR-MR(1,3)*Wr)/(Wr*Wr);
+    A(3,1) = c*(MR(3,1)*Ur-MR(1,1)*Wr)/(Wr*Wr);
+    A(3,2) = c*(MR(3,2)*Ur-MR(1,2)*Wr)/(Wr*Wr);
+    A(3,3) = c*(MR(3,3)*Ur-MR(1,3)*Wr)/(Wr*Wr);
 
-    A(4,1) = c*(MR(3,1)*Vr-MR(1,1)*Wr)/(Wr*Wr);
-    A(4,2) = c*(MR(3,2)*Vr-MR(1,2)*Wr)/(Wr*Wr);
-    A(4,3) = c*(MR(3,3)*Vr-MR(1,3)*Wr)/(Wr*Wr);
+    A(4,1) = c*(MR(3,1)*Vr-MR(2,1)*Wr)/(Wr*Wr);
+    A(4,2) = c*(MR(3,2)*Vr-MR(2,2)*Wr)/(Wr*Wr);
+    A(4,3) = c*(MR(3,3)*Vr-MR(2,3)*Wr)/(Wr*Wr);
 
 
     fxL = -c*Ul/Wl;
@@ -156,7 +143,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     wyR = fyR - yiR;
 
     w(1, 1)=wxL;
-    w(2, 2)=wyL;
+    w(2, 1)=wyL;
     w(3, 1)=wxR;
     w(4, 1)=wyR;
 
@@ -212,9 +199,9 @@ function b = make_b(c,mL,mR,xL,yL,xR,yR,Xc,Yc,Zc)
          + (xR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
          + (xR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
 
-         b(4,1) = (yR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
-         + (yR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
-         + (yR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+         b(4,1) = (yR(1)*mR(3,1)+(c*mR(2,1))) *Xc(1,2)...
+         + (yR(1)*mR(3,2)+(c*mR(2,2)))*Yc(1,2)...
+         + (yR(1)*mR(3,3))+(c*mR(2,3))*Zc(1,2);
 end
 
 
