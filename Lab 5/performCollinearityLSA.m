@@ -33,14 +33,15 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     yVal27 = data27(:,2);
 
 
-    M27 = M_transformation_Matrix(EOPAngles(:,1))
-    M28 = M_transformation_Matrix(EOPAngles(:,2))
+    M27 = M_transformation_Matrix(EOPAngles(:,1));
+    M28 = M_transformation_Matrix(EOPAngles(:,2));
 
-    A = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
+    weirdA = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
     b = make_b(c,M27,M28,xVal27,yVal27,xVal28,yVal28,Xc,Yc,Zc);
-    
-    Xnot = inverse((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
-
+   
+   
+    xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
+    xhat
 
    
     counter = 0;
@@ -48,13 +49,12 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     %Run least squares adjustment with defined paramters and functions for
     %all LSA parameters
     notConverged = true;
-    while notConverged
+    while counter<5
         
-        M27 = M_transformation_Matrix(EOPAngles(:,1))
-        M28 = M_transformation_Matrix(EOPAngles(:,2))
+       
         %Find M
 
-        [A,w] = findDesignMatrixAandW(xo,data27,data28,M27,M28,c,EOP) 
+        [A,w] = findDesignMatrixAandW(xhat,data27,data28,M27,M28,c,EOP) 
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
@@ -111,11 +111,11 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     Yi = xhat(2,1);
     Zi = xhat(3,1);
 
-    xiL = dataL(1,2);
-    yiL = dataL(1,3);
+    xiL = dataL(1,1);
+    yiL = dataL(1,2);
 
-    xiR = dataR(1,4);
-    yiR = dataR(1,5);
+    xiR = dataR(1,1);
+    yiR = dataR(1,2);
 
 
     Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
@@ -134,9 +134,9 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     A(2,2) = c*(ML(3,2)*Vl-ML(1,2)*Wl)/(Wl*Wl);
     A(2,3) = c*(ML(3,3)*Vl-ML(1,3)*Wl)/(Wl*Wl);
 
-    A(3,1) = c*(MR(3,1)*UR-MR(1,1)*Wr)/(Wr*Wr);
-    A(3,2) = c*(MR(3,2)*UR-MR(1,2)*Wr)/(Wr*Wr);
-    A(3,3) = c*(MR(3,3)*UR-MR(1,3)*Wr)/(Wr*Wr);
+    A(3,1) = c*(MR(3,1)*Ur-MR(1,1)*Wr)/(Wr*Wr);
+    A(3,2) = c*(MR(3,2)*Ur-MR(1,2)*Wr)/(Wr*Wr);
+    A(3,3) = c*(MR(3,3)*Ur-MR(1,3)*Wr)/(Wr*Wr);
 
     A(4,1) = c*(MR(3,1)*Vr-MR(1,1)*Wr)/(Wr*Wr);
     A(4,2) = c*(MR(3,2)*Vr-MR(1,2)*Wr)/(Wr*Wr);
@@ -156,7 +156,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     wyR = fyR - yiR;
 
     w(1, 1)=wxL;
-    w(2, 2)=wyL;
+    w(2, 1)=wyL;
     w(3, 1)=wxR;
     w(4, 1)=wyR;
 
@@ -212,9 +212,9 @@ function b = make_b(c,mL,mR,xL,yL,xR,yR,Xc,Yc,Zc)
          + (xR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
          + (xR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
 
-         b(4,1) = (yR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
-         + (yR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
-         + (yR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+         b(4,1) = (yR(1)*mR(3,1)+(c*mR(2,1))) *Xc(1,2)...
+         + (yR(1)*mR(3,2)+(c*mR(2,2)))*Yc(1,2)...
+         + (yR(1)*mR(3,3))+(c*mR(2,3))*Zc(1,2);
 end
 
 
