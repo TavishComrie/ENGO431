@@ -33,7 +33,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
     yVals28 = data28(:,2);
     
     xVals27 = data27(:,1);
-    yVals28 = data28(:,1);
+    yVals28 = data28(:,2);
 
     for i = 1:size(data28,1)
         for j = 1:2
@@ -42,6 +42,8 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
         end
     end
     
+    Xnot = inverse((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
+
 
    
     counter = 0;
