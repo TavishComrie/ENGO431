@@ -160,8 +160,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     w(3, 1)=wxR;
     w(4, 1)=wyR;
 
-    end
-    w
+    
 end
 
 
