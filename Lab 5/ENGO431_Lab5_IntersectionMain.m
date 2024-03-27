@@ -12,7 +12,7 @@ intersectionImageCoords = load("intersectionImageCoords.txt");
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
 intersectionEOPs = load("intersectionEOPs.txt");
 intermediate1 = intersectionEOPs(1:3,:);
-intermediate2 = intersectionImageCoords(4:6,:) * pi/180;
+intermediate2 = intersectionEOPs(4:6,:) * pi/180;
 EOP = [intermediate1; intermediate2];
 
 dataleft = intersectionImageCoords(:,2:3);
