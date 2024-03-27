@@ -9,13 +9,16 @@ function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
     %is taken from Lab 2 report as RMS the values
     precImg = 0.004;
     
-    CL = (1/precImg) * CL;
+    CL = (precImg) * CL;
     %Make the weight matrix for the adjustment
     P = inv(CL);
     
     Xc = EOP(1,:);
+    
     Yc = EOP(2,:);
+    
     Zc = EOP(3,:);
+    Zc
   
 
     EOPAngles = EOP(4:6,:);
@@ -38,18 +41,19 @@ function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
 
     weirdA = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
     b = make_b(c,M27,M28,xVal27,yVal27,xVal28,yVal28,Xc,Yc,Zc);
+
+    weirdA
+    b
    
    
     xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
-    xhat = [6869.168,3844.536,283.202];
-    xhat = transpose(xhat);
-   
+    xhat
     counter = 0;
 
     %Run least squares adjustment with defined paramters and functions for
     %all LSA parameters
     notConverged = true;
-    while counter<5
+    while notConverged
         
        
         %Find M
@@ -188,20 +192,20 @@ function b = make_b(c,mL,mR,xL,yL,xR,yR,Xc,Yc,Zc)
         b(4,1) = zeros;
 
          b(1,1) = (xL(1)*mL(3,1)+(c*mL(1,1)))*Xc(1,1)...
-         + (xL(1)*mL(3,2)+(c*mL(1,2)))*Yc(1,1)...
-         + (xL(1)*mL(3,3))+(c*mL(1,3))*Zc(1,1);
+         + ((xL(1)*mL(3,2)+(c*mL(1,2)))*Yc(1,1))...
+         + ((xL(1)*mL(3,3))+(c*mL(1,3)))*Zc(1,1);
 
          b(2,1) = (yL(1)*mL(3,1)+(c*mL(2,1))) *Xc(1,1)...
-         + (yL(1)*mL(3,2)+(c*mL(2,2)))*Yc(1,1)...
-         + (yL(1)*mL(3,3))+(c*mL(2,3))*Zc(1,1);
+         + ((yL(1)*mL(3,2)+(c*mL(2,2)))*Yc(1,1))...
+         + ((yL(1)*mL(3,3))+(c*mL(2,3)))*Zc(1,1);
 
          b(3,1) = (xR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
-         + (xR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
-         + (xR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+         + ((xR(1)*mR(3,2)+(c*mR(1,2))))*Yc(1,2)...
+         + ((xR(1)*mR(3,3))+(c*mR(1,3)))*Zc(1,2);
 
          b(4,1) = (yR(1)*mR(3,1)+(c*mR(2,1))) *Xc(1,2)...
-         + (yR(1)*mR(3,2)+(c*mR(2,2)))*Yc(1,2)...
-         + (yR(1)*mR(3,3))+(c*mR(2,3))*Zc(1,2);
+         + ((yR(1)*mR(3,2)+(c*mR(2,2))))*Yc(1,2)...
+         + ((yR(1)*mR(3,3))+(c*mR(2,3)))*Zc(1,2);
 end
 
 
