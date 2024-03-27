@@ -3,13 +3,14 @@ clear
 close all
 
 
+%TEST VALIDATION DATA USED FOR THIS ADJUSTMENT
+
 % Format: 
 % (1) Point Number, 
 % (2) X-Coordinate (Left Image), (3) Y-Coordinate (Left Image), 
 % (4) X-Coordinate (Right Image), (5) Y-Coordinate (Right Image)
 intersectionImageCoords = load("intersectionImageCoords.txt");
 cVal = 152.15;
-c = 153.358;
 % Format: 
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
 intersectionEOPs = load("intersectionEOPs.txt");
@@ -33,4 +34,27 @@ for i = 1:size(intersectionImageCoords,1)
 end
 
 
+%REAL DATA USED FOR THIS ADJUSTMENT
 
+
+intersectionCorrectedCoords = load("intersectionCorrectedCoords.txt");
+c = 153.358;
+
+TrueintersectionEOPs = load("EOPsForIntersectionMain.txt");
+intermediateTrue1 = TrueintersectionEOPs(1:3,:);
+intermediateTrue2 = TrueintersectionEOPs(4:6,:);
+EOP = [intermediateTrue1; intermediateTrue2];
+
+dataleftTrue = intersectionCorrectedCoords(:,2:3);
+datarightTrue = intersectionCorrectedCoords(:,4:5);
+
+xhatVal(size(intersectionCorrectedCoords,1),3) = zeros;
+
+
+
+
+for i = 1:size(intersectionCorrectedCoords,1)
+
+    [xhatTrue] = performCollinearityLSA(cVal,datarightTrue(i,:), EOP,dataleftTrue(i,:));
+    xhat(i,:) = xhatTrue;
+end
