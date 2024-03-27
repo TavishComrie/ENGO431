@@ -19,7 +19,7 @@ Image28PointsMatrix = [500	7398	-3018
 515	7648	-3324
 ];
 
-
+id = Image28PointsMatrix(:,1);
 
 
 Image27PointsMatrix = [500	15362	-3393
@@ -64,7 +64,12 @@ Finalcoords27 = adjust(Xhat_27, Image27PointsMatrix);
 [Xprime27, yPrime27, matrix_corr27] = ImagePointCorrections(Finalcoords27(:,1), Finalcoords27(:,2));
 [Xprime28, yPrime28, matrix_corr28] = ImagePointCorrections(Finalcoords28(:,1), Finalcoords28(:,2));
 
+data27 = [id,Xprime27, yPrime27];
+data28 = [Xprime28, yPrime28];
 
+data = [data27, data28];
+
+writematrix(data, "Ourdata.txt")
 function finalcoords = adjust(xhat, PointsMatrix)
     finalcoords = zeros(size(PointsMatrix) -1);
 
