@@ -1,4 +1,4 @@
-function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28, EOP, IOP, data27 )
+function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data28, EOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
@@ -9,7 +9,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
     %Precision of the x,y coords in image space
     %is taken from Lab 2 report as RMS the values
     precImg = 0.004;
-
+    
     CL = (1/precImg) * CL;
     %Make the weight matrix for the adjustment
     P = inv(CL);
@@ -19,28 +19,25 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
     Zc = EOP(3,:);
 
     EOPAngles = EOP(4:6,:);
-
-    
+  
     %initialize threhold
-    threshold = [0.0001;0.0001;0.0001;0.001;0.001;0.001;0.001];
+    threshold = [0.0001;0.0001;0.0001];
     
-    xo(size(data28,1),1) = zeros;
-    yo(size(data28,1),1) = zeros;
-    
+
     %Find approximate Values
 
-    xVals28 = data28(:,1);
-    yVals28 = data28(:,2);
+    xVal28 = data28(:,1);
+    yVal28 = data28(:,2);
     
     xVals27 = data27(:,1);
     yVals28 = data28(:,2);
 
-    for i = 1:size(data28,1)
-        for j = 1:2
-            x(
 
-        end
-    end
+    M27 = M_transformation_Matrix(EOPAngles(:,1))
+    M28 = M_transformation_Matrix(EOPAngles(:,2))
+
+    A = make_weirdA(c,M27,M28,xVal27,yVal27,xVal28,yVal28);
+    b = make_b(c,M27,M28,xVal27,yVal27,xVal28,yVal28,Xc,Yc,Zc);
     
     Xnot = inverse((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
 
@@ -57,11 +54,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
         M28 = M_transformation_Matrix(EOPAngles(:,2))
         %Find M
 
-        A = findDesignMatrixA(data, xhat, M)
-        %Find A
-
-        w = createMisclosure(xhat,data,M)
-        %Find W
+        [A,w] = findDesignMatrixAandW(xo,data27,data28,M27,M28,c,EOP) 
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
@@ -98,7 +91,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(data28,
 end
 
 
-function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP) 
+function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP) 
 %development of the A matrix
     n = 4;
 
@@ -118,11 +111,11 @@ function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP)
     Yi = xhat(2,1);
     Zi = xhat(3,1);
 
-    xiL = imageData(1,2);
-    yiL = imageData(1,3);
+    xiL = dataL(1,2);
+    yiL = dataL(1,3);
 
-    xiR = imageData(1,4);
-    yiR = imageData(1,5);
+    xiR = dataR(1,4);
+    yiR = dataR(1,5);
 
 
     Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
@@ -133,31 +126,39 @@ function [A,w] = findDesignMatrixAandW(xhat,imagePoints,ML,MR,c,EOP)
     Vr = MR(2,1)*(Xi-Xcr)+MR(2,2)*(Yi-Ycr)+MR(2,3)*(Zi-Zcr);
     Wr = MR(3,1)*(Xi-Xcr)+MR(3,2)*(Yi-Ycr)+MR(3,3)*(Zi-Zcr);
 
-        A(1,1) = c*(ML(3,1)*U-M(1,1)*W)/(W*W);
-        A(1,2) = c*(M1(3,2)*U-M(1,2)*W)/(W*W);
-        A(1,3) = c*(M1(3,3)*U-M(1,3)*W)/(W*W);
+    A(1,1) = c*(ML(3,1)*Ul-ML(1,1)*Wl)/(Wl*Wl);
+    A(1,2) = c*(ML(3,2)*Ul-ML(1,2)*Wl)/(Wl*Wl);
+    A(1,3) = c*(ML(3,3)*Ul-ML(1,3)*Wl)/(Wl*Wl);
 
-        dyX = c*(M(3,1)*V-M(2,1)*W)/(W*W);
-        dyY = c*(M(3,2)*V-M(2,2)*W)/(W*W);
-        dyZ = c*(M(3,3)*V-M(2,3)*W)/(W*W);
+    A(2,1) = c*(ML(3,1)*Vl-ML(1,1)*Wl)/(Wl*Wl);
+    A(2,2) = c*(ML(3,2)*Vl-ML(1,2)*Wl)/(Wl*Wl);
+    A(2,3) = c*(ML(3,3)*Vl-ML(1,3)*Wl)/(Wl*Wl);
+
+    A(3,1) = c*(MR(3,1)*UR-MR(1,1)*Wr)/(Wr*Wr);
+    A(3,2) = c*(MR(3,2)*UR-MR(1,2)*Wr)/(Wr*Wr);
+    A(3,3) = c*(MR(3,3)*UR-MR(1,3)*Wr)/(Wr*Wr);
+
+    A(4,1) = c*(MR(3,1)*Vr-MR(1,1)*Wr)/(Wr*Wr);
+    A(4,2) = c*(MR(3,2)*Vr-MR(1,2)*Wr)/(Wr*Wr);
+    A(4,3) = c*(MR(3,3)*Vr-MR(1,3)*Wr)/(Wr*Wr);
 
 
-        A(2*i-1,1)=dxX;
-        A(2*i-1,2)=dxY;
-        A(2*i-1,3)=dxZ;
+    fxL = -c*Ul/Wl;
+    fyL = -c*Vl/Wl;   
 
-        A(2*i,1)=dyX;
-        A(2*i,2)=dyY;
-        A(2*i,3)=dyZ;
+    fxR = -c*Ur/Wr;
+    fyR = -c*Vr/Wr;
 
-        fx = -c*U/W;
-        fy = -c*V/W;   
+    wxL = fxL - xiL;
+    wyL = fyL - yiL;
 
-        wx = fx - xi;
-        wy = fy - yi;
+    wxR = fxR - xiR;
+    wyR = fyR - yiR;
 
-        w(2*i-1,1)=wx;
-        w(2*i,1)=wy;
+    w(1, 1)=wxL;
+    w(2, 2)=wyL;
+    w(3, 1)=wxR;
+    w(4, 1)=wyR;
 
     end
     w
@@ -167,11 +168,55 @@ end
 function M = M_transformation_Matrix(EOP)
     %M matrix developed for transforamtion
     %Xhat parameters extracted to be used 
-    w = EOP(4,1);
-    phi = EOP(5,1);
-    kappa = EOP(6,1);
+    w = EOP(1,1);
+    phi = EOP(2,1);
+    kappa = EOP(3,1);
     %initalize M matrix in radians
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
 end
+
+function weirdA = make_weirdA(c,mL,mR,xL,yL,xR,yR)
+
+
+        weirdA(1,1) = (xL(1)*mL(3,1))+(c*mL(1,1));
+        weirdA(1,2) = (xL(1)*mL(3,2))+(c*mL(1,2));
+        weirdA(1,3) = (xL(1)*mL(3,3))+(c*mL(1,3));
+
+        weirdA(2,1) = (yL(1)*mL(3,1))+(c*mL(2,1));
+        weirdA(2,2) = (yL(1)*mL(3,2))+(c*mL(2,2));
+        weirdA(2,3) = (yL(1)*mL(3,3))+(c*mL(2,3));
+
+        weirdA(3,1) = (xR(1)*mR(3,1))+(c*mR(1,1));
+        weirdA(3,2) = (xR(1)*mR(3,2))+(c*mR(1,2));
+        weirdA(3,3) = (xR(1)*mR(3,3))+(c*mR(1,3));
+
+        weirdA(4,1) = (yR(1)*mR(3,1))+(c*mR(2,1));
+        weirdA(4,2) = (yR(1)*mR(3,2))+(c*mR(2,2));
+        weirdA(4,3) = (yR(1)*mR(3,3))+(c*mR(2,3));
+   
+end
+
+function b = make_b(c,mL,mR,xL,yL,xR,yR,Xc,Yc,Zc)
+        b(4,1) = zeros;
+
+         b(1,1) = (xL(1)*mL(3,1)+(c*mL(1,1)))*Xc(1,1)...
+         + (xL(1)*mL(3,2)+(c*mL(1,2)))*Yc(1,1)...
+         + (xL(1)*mL(3,3))+(c*mL(1,3))*Zc(1,1);
+
+         b(2,1) = (yL(1)*mL(3,1)+(c*mL(2,1))) *Xc(1,1)...
+         + (yL(1)*mL(3,2)+(c*mL(2,2)))*Yc(1,1)...
+         + (yL(1)*mL(3,3))+(c*mL(2,3))*Zc(1,1);
+
+         b(3,1) = (xR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
+         + (xR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
+         + (xR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+
+         b(4,1) = (yR(1)*mR(3,1)+(c*mR(1,1))) *Xc(1,2)...
+         + (yR(1)*mR(3,2)+(c*mR(1,2)))*Yc(1,2)...
+         + (yR(1)*mR(3,3))+(c*mR(1,3))*Zc(1,2);
+end
+
+
+
