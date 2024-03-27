@@ -25,4 +25,6 @@ for i = size(intersectionImageCoords,1)
 end
 
 
+meanHeight = mean(xHat(:,3));
+residuals = xHat(:,3) - meanHeight;
 
