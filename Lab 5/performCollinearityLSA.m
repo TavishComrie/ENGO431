@@ -172,12 +172,12 @@ function w = createMisclosure(x0,data,M)
 end
 
 
-function M = M_transformation_Matrix(Xnot)
+function M = M_transformation_Matrix(EOP)
     %M matrix developed for transforamtion
     %Xhat parameters extracted to be used 
-    w = Xnot(1,1);
-    phi = Xnot(2,1);
-    kappa = Xnot(3,1);
+    w = EOP(4,1);
+    phi = EOP(5,1);
+    kappa = EOP(6,1);
     %initalize M matrix in radians
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
