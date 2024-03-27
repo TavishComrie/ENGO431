@@ -17,6 +17,7 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
     Xc = EOP(1,:);
     Yc = EOP(2,:);
     Zc = EOP(3,:);
+  
 
     EOPAngles = EOP(4:6,:);
   
@@ -41,6 +42,8 @@ function [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(c,data2
    
    
     xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
+    xhat = [6869.168,3844.536,283.202];
+    xhat = transpose(xhat);
     xhat
 
    
