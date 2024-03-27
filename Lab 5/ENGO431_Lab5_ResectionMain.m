@@ -1,7 +1,7 @@
 clc
 clear
 close all
-format long
+format long g
 
 %--------------------------------Validation--------------------------------
 % Format: 
@@ -61,4 +61,4 @@ disp("Right Resect")
 disp("Left Resect")
 %[xhatRight, residualsRight,RxRight,RValuesRight] = performSinglePhotoResection(rightImageCoords,objectCoordsMain,mainRMSE,mainC,imgScale,rmaxMain);
 disp("Val Resect")
-[xhatVal, residualsVal,RxVal,RValuesVal] = performSinglePhotoResection(validationImgCoords,validationObjCoords,validationRMSE,validationC,imgScale,rmaxMain);
+[xhatVal, residualsVal,RxVal,RValuesVal] = performSinglePhotoResection(validationImgCoords,validationObjCoords,validationRMSE,validationC,7800,rmaxMain);

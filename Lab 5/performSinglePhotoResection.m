@@ -21,7 +21,7 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
 
     xhat
 
-    xhat = [6338.6;3984.6;1453.1;0;0;-18.854]
+    xhat = [6338.6;3984.6;1453.1;0;0;-18.854*pi/180]
 
     %initialize threhold
 
@@ -45,7 +45,7 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
         M = M_transformation_Matrix(xhat);
         %Find M
 
-        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c);
+        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c)
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
@@ -128,7 +128,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         yterm3 = (Zi-Zc)*(W*cos(omega)*cos(phi)*sin(k)+V*cos(omega)*sin(phi));
 
         dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
-        dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
+        dyo = (c/(W*W)) * (yterm1+yterm2+yterm3);
 
 
         A(2*i-1,1)=dxX;
