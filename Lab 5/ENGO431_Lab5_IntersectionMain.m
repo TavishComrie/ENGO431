@@ -34,7 +34,12 @@ for i = 1:size(intersectionImageCoords,1)
 end
 
 
+
 %REAL DATA USED FOR THIS ADJUSTMENT
+
+meanHeight = mean(xHat(:,3));
+residuals = xHat(:,3) - meanHeight;
+
 
 
 intersectionCorrectedCoords = load("intersectionCorrectedCoords.txt");
