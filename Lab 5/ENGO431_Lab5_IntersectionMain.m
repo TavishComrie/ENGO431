@@ -20,15 +20,16 @@ EOP = [intermediate1; intermediate2];
 dataleft = intersectionImageCoords(:,2:3);
 dataright = intersectionImageCoords(:,4:5);
 
-xhat(size(ImageCoords,1),3) = zeros;
+xhatVal(size(intersectionImageCoords,1),3) = zeros;
 
 
 
 
-for i = size(intersectionImageCoords,1)
-    
-    [xhat, residuals,Rx,M,t,scale,RValues] = performCollinearityLSA(cVal,dataright(i,:), EOP,dataleft(i,:));
-    xhat(i,:) = xhat;
+for i = 1:size(intersectionImageCoords,1)
+
+    [xhat1] = performCollinearityLSA(cVal,dataright(i,:), EOP,dataleft(i,:));
+    xhat1
+    xhatVal(i,:) = xhat1;
 end
 
 
