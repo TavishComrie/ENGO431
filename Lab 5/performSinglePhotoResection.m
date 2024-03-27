@@ -21,7 +21,7 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
 
     xhat
 
-    xhat = [6338.6;3984.6;1453.1;0;0;-18.854]
+    xhat = [6338.6;3984.6;1453.1;0;0;-18.854*pi/180]
 
     %initialize threhold
 
@@ -45,7 +45,7 @@ function [xhat, residuals,Rx,RValues] = performSinglePhotoResection(imageData,ob
         M = M_transformation_Matrix(xhat);
         %Find M
 
-        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c);
+        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c)
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
