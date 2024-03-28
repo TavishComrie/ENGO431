@@ -10,12 +10,8 @@ close all
 % (2) X-Coordinate (Left Image), (3) Y-Coordinate (Left Image), 
 % (4) X-Coordinate (Right Image), (5) Y-Coordinate (Right Image)
 intersectionImageCoords = load("intersectionImageCoords.txt");
-<<<<<<< Updated upstream
 cVal = 152.15;
-=======
-c = 152.15;
 
->>>>>>> Stashed changes
 % Format: 
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
 intersectionEOPs = load("intersectionEOPs.txt");
