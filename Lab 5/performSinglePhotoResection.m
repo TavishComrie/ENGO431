@@ -106,15 +106,19 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
     A(n,6) = zeros;
     w(n,1) = zeros;
 
+    %Reads unknowns
     Xc = x(1,1);
     Yc = x(2,1);
     Zc = x(3,1);
-
+    
+    %Solves for angles using M matrix
     phi = asin(M(3,1));
     k = atan2(-M(2,1),M(1,1));
     omega = atan2(-M(3,2),M(3,3));
 
     for i = 1:p
+
+        %For each object and image point
         Xi = objectData(i,2);
         Yi = objectData(i,3);
         Zi = objectData(i,4);
@@ -122,7 +126,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         xi = imageData(i,2);
         yi = imageData(i,3);
 
-
+        %Uses collinearity equations
         U = M(1,1)*(Xi-Xc)+M(1,2)*(Yi-Yc)+M(1,3)*(Zi-Zc);
         V = M(2,1)*(Xi-Xc)+M(2,2)*(Yi-Yc)+M(2,3)*(Zi-Zc);
         W = M(3,1)*(Xi-Xc)+M(3,2)*(Yi-Yc)+M(3,3)*(Zi-Zc);
@@ -153,7 +157,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         dxo = (-c/(W*W)) * (xterm1+xterm2+xterm3);
         dyo = (-c/(W*W)) * (yterm1+yterm2+yterm3);
 
-
+        %Stores the derivatives into the A matrix
         A(2*i-1,1)=dxX;
         A(2*i-1,2)=dxY;
         A(2*i-1,3)=dxZ;

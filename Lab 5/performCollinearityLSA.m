@@ -1,7 +1,14 @@
 function [xhat, redundancyNumbers] = performCollinearityLSA(c,data28, EOP, data27 )
-    %UNTITLED2 Summary of this function goes here
-    %   Detailed explanation goes here    
-    %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
+    % Summary:  collinearityLSA transforms
+    %
+    % Input
+    %       c:          the focal length 
+    %       data28:     image point coords of image 28
+    %       data27:     image point coords of image 27
+    %       EOP:       EOPs of each image
+    % Output
+    %       xhat:       the estimated EOPs
+    %       redundancyNumbers:    the vector of redundancy values
     CL = eye(4,4);
     %initialize the Cl matrix with the precision
 
@@ -13,13 +20,12 @@ function [xhat, redundancyNumbers] = performCollinearityLSA(c,data28, EOP, data2
     %Make the weight matrix for the adjustment
     P = inv(CL);
     
+    %Reads the EOP values
     Xc = EOP(1,:);
     
     Yc = EOP(2,:);
     
     Zc = EOP(3,:);
-   
-  
 
     EOPAngles = EOP(4:6,:);
   
@@ -46,9 +52,12 @@ function [xhat, redundancyNumbers] = performCollinearityLSA(c,data28, EOP, data2
     b
    
    
+    %Approximate LSA runs
     xhat = inv((transpose(weirdA) * weirdA))*transpose(weirdA)*b;
     xhat
     counter = 0;
+
+    %Approximate values solved for, starting adjustment
 
     %Run least squares adjustment with defined paramters and functions for
     %all LSA parameters
@@ -90,9 +99,11 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
 %development of the A matrix
     n = 4;
 
+    %Sizes A and w
     A(4,3) = zeros;
     w(4,1) = zeros;
 
+    %Reads EOP's
     Xcl = EOP(1,1);
     Ycl = EOP(2,1);
     Zcl = EOP(3,1);
@@ -101,7 +112,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     Ycr = EOP(2,2);
     Zcr = EOP(3,2);
 
-
+    %Reads unknowns
     Xi = xhat(1,1); 
     Yi = xhat(2,1);
     Zi = xhat(3,1);
@@ -112,7 +123,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     xiR = dataR(1,1);
     yiR = dataR(1,2);
 
-
+    %Applies collinearity equations
     Ul = ML(1,1)*(Xi-Xcl)+ML(1,2)*(Yi-Ycl)+ML(1,3)*(Zi-Zcl);
     Vl = ML(2,1)*(Xi-Xcl)+ML(2,2)*(Yi-Ycl)+ML(2,3)*(Zi-Zcl);
     Wl = ML(3,1)*(Xi-Xcl)+ML(3,2)*(Yi-Ycl)+ML(3,3)*(Zi-Zcl);
@@ -121,6 +132,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     Vr = MR(2,1)*(Xi-Xcr)+MR(2,2)*(Yi-Ycr)+MR(2,3)*(Zi-Zcr);
     Wr = MR(3,1)*(Xi-Xcr)+MR(3,2)*(Yi-Ycr)+MR(3,3)*(Zi-Zcr);
 
+    %Applies derivatives
     A(1,1) = c*(ML(3,1)*Ul-ML(1,1)*Wl)/(Wl*Wl);
     A(1,2) = c*(ML(3,2)*Ul-ML(1,2)*Wl)/(Wl*Wl);
     A(1,3) = c*(ML(3,3)*Ul-ML(1,3)*Wl)/(Wl*Wl);
@@ -138,6 +150,7 @@ function [A,w] = findDesignMatrixAandW(xhat,dataL,dataR,ML,MR,c,EOP)
     A(4,3) = c*(MR(3,3)*Vr-MR(2,3)*Wr)/(Wr*Wr);
 
 
+    %Solves for misclosure
     fxL = -c*Ul/Wl;
     fyL = -c*Vl/Wl;   
 
@@ -171,6 +184,8 @@ function M = M_transformation_Matrix(EOP)
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
 end
 
+
+%Functions to find approximate values
 function weirdA = make_weirdA(c,mL,mR,xL,yL,xR,yR)
 
 
