@@ -19,20 +19,15 @@ function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(image
     xhat(5,1) = 0;
     xhat(6,1) = atan2(b,a);
 
-    xhat
-
-    %xhat = [6338.6;3984.6;1453.1;0;0;-18.854*pi/180]
 
     %initialize threhold
-
-
     xyThreshold = S * rmse / 10 / 1000;
     omegaphiThreshold = rmse / (10*c);
     kappaThreshold = rmse / (10*rmax);
 
     angleThreshold = min(omegaphiThreshold,kappaThreshold);
 
-    threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold]
+    threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold];
   
    
     counter = 0;
