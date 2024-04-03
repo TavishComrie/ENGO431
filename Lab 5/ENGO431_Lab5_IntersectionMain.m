@@ -66,3 +66,10 @@ end
 
 meanHeight = mean(xhat(:,3));
 residuals = xhat(:,3) - meanHeight;
+
+zero(size(residuals,1),1) = zeros;
+
+quiver(xhat(:,1),xhat(:,2),zero,residuals(:,1),0.5)
+title("Vertical Residuals of Tennis Court")
+xlabel("X Object Coordinate (m)")
+ylabel("Y Object Coordinate (m)")
