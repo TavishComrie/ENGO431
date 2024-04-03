@@ -26,13 +26,13 @@ xhatVal(size(intersectionImageCoords,1),3) = zeros;
 
 
 
-% 
-% for i = 1:size(intersectionImageCoords,1)
-% 
-%     [xhat1] = performCollinearityLSA(cVal,dataright(i,:), EOP,dataleft(i,:));
-%     xhat1
-%     xhatVal(i,:) = xhat1;
-% end
+ 
+for i = 1:size(intersectionImageCoords,1)
+
+    [xhat1] = performCollinearityLSA(cVal,dataright(i,:), EOP,dataleft(i,:));
+    xhat1
+    xhatVal(i,:) = xhat1;
+end
 
 
 
