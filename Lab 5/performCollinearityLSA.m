@@ -18,7 +18,7 @@ function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
     Yc = EOP(2,:);
     
     Zc = EOP(3,:);
-    Zc
+   
   
 
     EOPAngles = EOP(4:6,:);

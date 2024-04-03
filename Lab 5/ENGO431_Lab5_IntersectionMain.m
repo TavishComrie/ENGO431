@@ -66,3 +66,5 @@ end
 
 meanHeight = mean(xhat(:,3));
 residuals = xhat(:,3) - meanHeight;
+rms(residuals)
+
