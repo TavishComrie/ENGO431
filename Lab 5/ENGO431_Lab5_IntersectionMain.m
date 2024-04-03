@@ -60,11 +60,21 @@ xhat(size(intersectionCorrectedCoords,1),3) = zeros;
 
 for i = 1:size(intersectionCorrectedCoords,1)
 
-    [xhatTrue] = performCollinearityLSA(c,datarightTrue(i,:), EOPs,dataleftTrue(i,:));
-    xhat(i,:) = xhatTrue;
+    [xhatTrue, rValues] = performCollinearityLSA(c,datarightTrue(i,:), EOPs,dataleftTrue(i,:));
+    xhat(i, :) = xhatTrue;
+    rVal(i, :) = rValues';
 end
+
+rSum = sum(sum(rVal));
 
 meanHeight = mean(xhat(:,3));
 residuals = xhat(:,3) - meanHeight;
 rms(residuals)
 
+
+zero(size(residuals,1),1) = zeros;
+
+quiver(xhat(:,1),xhat(:,2),zero,residuals(:,1),0.5)
+title("Vertical Residuals of Tennis Court")
+xlabel("X Object Coordinate (m)")
+ylabel("Y Object Coordinate (m)")

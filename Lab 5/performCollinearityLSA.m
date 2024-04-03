@@ -1,4 +1,4 @@
-function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
+function [xhat, redundancyNumbers] = performCollinearityLSA(c,data28, EOP, data27 )
     %UNTITLED2 Summary of this function goes here
     %   Detailed explanation goes here    
     %In order 7x1, omega,phi,kappa,tx,ty,tz,scale
@@ -79,6 +79,10 @@ function [xhat] = performCollinearityLSA(c,data28, EOP, data27 )
 
         counter = counter + 1;
     end
+    
+    I = eye(size(data27, 2) * 2);
+    R = I - (A * inv(A'*P*A) * A' * P);
+    redundancyNumbers = diag(R);
 end
 
 
