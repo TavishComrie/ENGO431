@@ -60,9 +60,12 @@ xhat(size(intersectionCorrectedCoords,1),3) = zeros;
 
 for i = 1:size(intersectionCorrectedCoords,1)
 
-    [xhatTrue] = performCollinearityLSA(c,datarightTrue(i,:), EOPs,dataleftTrue(i,:));
-    xhat(i,:) = xhatTrue;
+    [xhatTrue, rValues] = performCollinearityLSA(c,datarightTrue(i,:), EOPs,dataleftTrue(i,:));
+    xhat(i, :) = xhatTrue;
+    rVal(i, :) = rValues';
 end
+
+rSum = sum(sum(rVal));
 
 meanHeight = mean(xhat(:,3));
 residuals = xhat(:,3) - meanHeight;
