@@ -45,7 +45,7 @@ function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(image
         M = M_transformation_Matrix(xhat);
         %Find M
 
-        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c)
+        [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c);
 
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
@@ -67,7 +67,7 @@ function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(image
     end
     %post adjustment procedure
     residuals = A * delta + w;
-    aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6)
+    aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6);
     %determine correlation and redundancy
     Cx = inv(N);
     Rx = corrcov(Cx); %TODO
@@ -157,7 +157,6 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         w(2*i,1)=wy;
 
     end
-    w
 end
 
 

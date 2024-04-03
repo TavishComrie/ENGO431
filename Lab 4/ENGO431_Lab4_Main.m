@@ -32,7 +32,7 @@ basevector = load("baseVector.txt");
 [xhat, residuals, Rx, M,t,scale, RedundancyNumbers] = performLeastSquaresAdjustment(mainData,0.1);
 %Run the LSA for the valdiation data to obtain the same final results to
 %compare scripts
-[xhatCheck, residualsCheck, RxCheck, Mcheck, tcheck, Scalecheck, RedundancyNumbersCheck] = performLeastSquaresAdjustment(validationdata,1);
+[xhatCheck, residualsValidation, RxCheck, MValidation, tValidation, scaleValidation, RedundancyNumbersCheck] = performLeastSquaresAdjustment(validationdata,1);
 
 %Initalize empty vectors
 checkObjectCoords = [];

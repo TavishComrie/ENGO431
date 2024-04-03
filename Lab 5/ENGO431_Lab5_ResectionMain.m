@@ -12,10 +12,9 @@ resectionImageAndObjectCoords = load("resectionImageAndObjectCoords.txt");
 
 validationImgCoords = resectionImageAndObjectCoords(:, 2:3);
 validationObjCoords = resectionImageAndObjectCoords(:, 4:6);
-validationControlNums = [30;40;50;112];
 
-validationImgCoords = [validationControlNums validationImgCoords];
-validationObjCoords = [validationControlNums validationObjCoords];
+validationImgCoords = [resectionImageAndObjectCoords(:, 1) validationImgCoords];
+validationObjCoords = [resectionImageAndObjectCoords(:, 1) validationObjCoords];
 
 % Format: 
 % (1) Xc, (2) Yc, (3) Zc, (4) w, (5) p, (6) k
