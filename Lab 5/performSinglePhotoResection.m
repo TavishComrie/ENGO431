@@ -1,17 +1,37 @@
 function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(imageData,objectData,rmse,c,S,rmax)
-    %UNTITLED2 Summary of this function goes here
-    %   Detailed explanation goes here    
-    %In order 6x1, Xc,Yc,Zc,omega,phi,kappa
+    % Summary:  the performSinglePhotoResection function returns the estimated 
+    %           EOPs, residuals, correlation matrix, redundancy values, and
+    %           standard deviations of the EOPs
+    %
+    % Input
+    %       imageData:  the image space coordinates of the points
+    %       objectData: the object space coordinates of the points
+    %       rmse:       the RMS error of the image space coordinates
+    %       c:          the focal length 
+    %       S:          the image scale
+    %       rmax:       the maximum radial distance in image space
+    % Output
+    %       xhat:       the estimated EOPs
+    %       residuals:  the vector of residuals
+    %       Rx:         the correlation coefficient matrix of the EOPs
+    %       Rvalues:    the vector of redundancy values
+    %       XhatSd:     the standard deviations of the EOPs
+
+    % In order 6x1, Xc,Yc,Zc,omega,phi,kappa
     xhat(6,1) = zeros;
     CL = (rmse^2)*eye(size(imageData,1)*2);
-    %initialize the Cl matrix with the precision
-    %Make the weight matrix for the adjustment
+
+    % Initialize the Cl matrix with the precision
+    % Make the weight matrix for the adjustment
     P = inv(CL);
 
+    % Perform the similarity transform to solve for the parameters
     [a,b,dx,dy] = similarityTransform(imageData,objectData);
+
+    % Compute the average z-position from the object space data
     Zave = mean(objectData(:,4));
 
-
+    % Computing the initial approximations for the EOPs
     xhat(1,1) = dx;
     xhat(2,1) = dy;
     xhat(3,1) = (c)*sqrt(a*a+b*b)+Zave;
@@ -20,39 +40,38 @@ function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(image
     xhat(6,1) = atan2(b,a);
 
 
-    %initialize threhold
+    % Initialize threhold
     xyThreshold = S * rmse / 10 / 1000;
     omegaphiThreshold = rmse / (10*c);
     kappaThreshold = rmse / (10*rmax);
 
+    % Choosing the minimum threshold to use for the angles
     angleThreshold = min(omegaphiThreshold,kappaThreshold);
 
+    % Setting the thresholds for the EOPs
     threshold = [xyThreshold;xyThreshold;xyThreshold;angleThreshold;angleThreshold;angleThreshold];
   
-   
+    % Setting a counter for the number of iterations
     counter = 0;
 
-    %Run least squares adjustment with defined paramters and functions for
-    %all LSA parameters
+    % Run least squares adjustment with defined paramters and functions for
     notConverged = true;
     while notConverged
-        %Find A
+        % Computing the transformation matrix
         M = M_transformation_Matrix(xhat);
-        %Find M
 
+        % Computing the design matrix and misclosure vector
         [A,w] = findDesignMatrixAandW(imageData,objectData,xhat,M,c);
 
+        % Computing the normal equations matrix and vector
         N = transpose(A) * P * A;
         u = transpose(A) * P * w;
-        %Find N and U
 
-        %Find the condition on N
-
+        % Computing the correction to the unknown parameter vector
         delta = -1 * (inv(N) * u);
-        %Find Delta (corrections for unknowns)
 
+        % Computing the estimated unknown parameter vector
         xhat = xhat + delta;
-        %Find Xhat (Corrected unknown parameters)
 
         %Check for convergence against vector of thresholds
         check = delta > threshold;
@@ -60,20 +79,27 @@ function [xhat, residuals,Rx,RValues,XhatSd] = performSinglePhotoResection(image
 
         counter = counter + 1;
     end
-    %post adjustment procedure
+
+    %--------------------------Post-Adjustment-----------------------------
+    
+    % Computing the vector of residuals
     residuals = A * delta + w;
+
+    % Computing the a-posteriori variance factor
     aPost = transpose(residuals) *P* residuals / (size(imageData,1)*2-6);
-    %determine correlation and redundancy
+
+    % Determine correlation and redundancy
     Cx = inv(N);
     Rx = corrcov(Cx); %TODO
     R = eye(size(imageData,1)*2) - A * inv(A'*P*A) * A' * P;
     RValues = diag(R);
 
+    % Computing the standard deviations of the EOPs
     XhatSd = sqrt(diag(Cx));
 end
 
 function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c) 
-%development of the A matrix
+    % Development of the A matrix
     p = size(imageData,1);
     n = 2*p;
 
@@ -142,6 +168,7 @@ function [A,w] = findDesignMatrixAandW(imageData,objectData,x,M,c)
         A(2*i,5)=dyo;
         A(2*i,6)=dyk;
 
+        % Computing the misclosure vector
         fx = -c*U/W;
         fy = -c*V/W;   
 
@@ -157,12 +184,13 @@ end
 
 
 function M = M_transformation_Matrix(Xnot)
-    %M matrix developed for transforamtion
-    %Xhat parameters extracted to be used 
+    % M matrix developed for transforamtion
+    % Xhat parameters extracted to be used 
     w = Xnot(4,1);
     phi = Xnot(5,1);
     kappa = Xnot(6,1);
-    %initalize M matrix in radians
+    
+    % Initalize M matrix in radians
     M = [cos(phi)*cos(kappa), cos(w)*sin(kappa)+sin(w)*sin(phi)*cos(kappa), sin(w)*sin(kappa)-cos(w)*sin(phi)*cos(kappa);
         -cos(phi)*sin(kappa), cos(w)*cos(kappa)-sin(w)*sin(phi)*sin(kappa), sin(w)*cos(kappa)+cos(w)*sin(phi)*sin(kappa);
         sin(phi), -sin(w)*cos(phi), cos(w)*cos(phi)];
