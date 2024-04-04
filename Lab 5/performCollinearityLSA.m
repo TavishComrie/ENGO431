@@ -5,10 +5,10 @@ function [xhat, redundancyNumbers] = performCollinearityLSA(c,data28, EOP, data2
     %       c:          the focal length 
     %       data28:     image point coords of image 28
     %       data27:     image point coords of image 27
-    %       EOP:       EOPs of each image
+    %       EOP:        EOPs of each image
     % Output
-    %       xhat:       the estimated EOPs
-    %       redundancyNumbers:    the vector of redundancy values
+    %       xhat:               the estimated EOPs
+    %       redundancyNumbers:  the vector of redundancy values
     CL = eye(4,4);
     %initialize the Cl matrix with the precision
 
